@@ -1,15 +1,12 @@
-package com.example.takemeds.repository;
+package com.example.takemeds.entities;
 
-import com.example.takemeds.repository.enums.Frequency;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,8 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Dosage {
-
+public class MedicationTakenLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,8 +24,5 @@ public class Dosage {
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;
 
-    @Enumerated(EnumType.STRING)
-    private Frequency frequency;
-
-    private LocalDateTime scheduledTime;
+    private LocalDateTime timeTaken;
 }

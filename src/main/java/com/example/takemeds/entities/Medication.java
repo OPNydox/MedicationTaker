@@ -1,4 +1,4 @@
-package com.example.takemeds.repository;
+package com.example.takemeds.entities;
 
 
 import jakarta.persistence.CascadeType;
