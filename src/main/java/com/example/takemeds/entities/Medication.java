@@ -43,7 +43,7 @@ public class Medication {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User assignee;
+    private User user;
 
 
 

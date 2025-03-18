@@ -4,10 +4,13 @@ import com.example.takemeds.entities.User;
 import com.example.takemeds.presentationModels.UserPresentationModel;
 import com.example.takemeds.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository repository;
@@ -15,7 +18,7 @@ public class UserService {
     public User createUser(UserPresentationModel model) {
         User newUser = new User();
 
-        newUser.setEmail(model.getEmail());
+        newUser.setEmail(model.getUsername());
         newUser.setName(model.getName());
         newUser.setPassword(model.getPassword());
 
@@ -27,14 +30,24 @@ public class UserService {
     public UserPresentationModel getUser(String email) {
         User foundUser = repository.findByEmail(email);
 
-        return UserPresentationModel.builder().email(foundUser.getEmail())
+        return UserPresentationModel.builder().username(foundUser.getEmail())
                                               .name(foundUser.getName()).build();
     }
 
     public UserPresentationModel getUser(Long id) {
         User foundUser = repository.findById(id).get();
 
-        return UserPresentationModel.builder().email(foundUser.getEmail())
+        return UserPresentationModel.builder().username(foundUser.getEmail())
                                               .name(foundUser.getName()).build();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User foundUser = repository.findByEmail(username);
+
+        return UserPresentationModel.builder().username(foundUser.getEmail())
+                                                                 .name(foundUser.getName())
+                                                                 .role(foundUser.getRole().toString())
+                                                                 .password(foundUser.getPassword()).build();
     }
 }
