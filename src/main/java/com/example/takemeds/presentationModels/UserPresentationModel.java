@@ -17,6 +17,8 @@ public class UserPresentationModel implements UserDetails {
 
     String password;
 
+    String role;
+
     public static UserPresentationModelBuilder builder() {
         return new UserPresentationModelBuilder();
     }
@@ -52,7 +54,7 @@ public class UserPresentationModel implements UserDetails {
         private String password;
         private String role;
 
-        UserPresentationModelBuilder() {
+        public UserPresentationModelBuilder() {
         }
 
         public UserPresentationModelBuilder username(String username) {
@@ -65,8 +67,8 @@ public class UserPresentationModel implements UserDetails {
             return this;
         }
 
-        public UserPresentationModelBuilder password(String name) {
-            this.name = name;
+        public UserPresentationModelBuilder password(String password) {
+            this.password = password;
             return this;
         }
 
@@ -76,7 +78,7 @@ public class UserPresentationModel implements UserDetails {
         }
 
         public UserPresentationModel build() {
-            return new UserPresentationModel(this.username, this.name, password);
+            return new UserPresentationModel(this.username, this.name, password, role);
         }
 
         public String toString() {
@@ -84,9 +86,10 @@ public class UserPresentationModel implements UserDetails {
         }
     }
 
-    public UserPresentationModel(String username, String name, String password) {
+    public UserPresentationModel(String username, String name, String password, String role) {
         setUsername(username);
         setName(name);
         setPassword(password);
+        setRole(role);
     }
 }
