@@ -17,7 +17,7 @@ public class UserPresentationModel implements UserDetails {
 
     String password;
 
-    String role;
+    List<RolePresentationModel> roles;
 
     public static UserPresentationModelBuilder builder() {
         return new UserPresentationModelBuilder();
@@ -25,7 +25,7 @@ public class UserPresentationModel implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return getRoles();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UserPresentationModel implements UserDetails {
         private String username;
         private String name;
         private String password;
-        private String role;
+        private List<RolePresentationModel> roles;
 
         public UserPresentationModelBuilder() {
         }
@@ -72,13 +72,13 @@ public class UserPresentationModel implements UserDetails {
             return this;
         }
 
-        public UserPresentationModelBuilder role(String role) {
-            this.role = role;
+        public UserPresentationModelBuilder roles(List<RolePresentationModel> roles) {
+            this.roles = roles;
             return this;
         }
 
         public UserPresentationModel build() {
-            return new UserPresentationModel(this.username, this.name, password, role);
+            return new UserPresentationModel(this.username, this.name, this.password, this.roles);
         }
 
         public String toString() {
@@ -86,10 +86,10 @@ public class UserPresentationModel implements UserDetails {
         }
     }
 
-    public UserPresentationModel(String username, String name, String password, String role) {
+    public UserPresentationModel(String username, String name, String password, List<RolePresentationModel> role) {
         setUsername(username);
         setName(name);
         setPassword(password);
-        setRole(role);
+        setRoles(role);
     }
 }

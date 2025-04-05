@@ -1,6 +1,7 @@
 package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Role;
+import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

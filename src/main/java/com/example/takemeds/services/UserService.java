@@ -3,6 +3,7 @@ package com.example.takemeds.services;
 import com.example.takemeds.configurations.SecurityConfig;
 import com.example.takemeds.entities.Role;
 import com.example.takemeds.entities.User;
+import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
 import com.example.takemeds.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,7 +31,7 @@ public class UserService implements UserDetailsService {
 
         roleService.createRole("USER");
         UserPresentationModel baseUser = new UserPresentationModel.UserPresentationModelBuilder().name("user")
-                .username("user").password("123").role("USER").build();
+                .username("user").password("123").roles(List.of(new RolePresentationModel("USER"))).build();
 
         createUser(baseUser);
     }
@@ -70,7 +73,7 @@ public class UserService implements UserDetailsService {
 
         return UserPresentationModel.builder().username(foundUser.getEmail())
                                                                  .name(foundUser.getName())
-                                                                 .role(foundUser.getRole().toString())
+                                                                 .roles(List.of(new RolePresentationModel(foundUser.getRole().toString())))
                                                                  .password(foundUser.getPassword()).build();
     }
 }
