@@ -31,6 +31,10 @@ public class JwtService {
 
     private KeyPair keyPair;
 
+    public JwtService() {
+        this.keyPair = Keys.keyPairFor(SignatureAlgorithm.ES256);
+    }
+
 
     public String generateToken(UserPresentationModel userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -41,7 +45,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwExpirationMs))
-                .signWith(SignatureAlgorithm.ES256,secretKey)
+                .signWith(SignatureAlgorithm.ES256,keyPair.getPrivate())
                 .compact();
 
     }

@@ -1,5 +1,7 @@
 package com.example.takemeds.controllers;
 
+import com.example.takemeds.configurations.JwtService;
+import com.example.takemeds.presentationModels.UserPresentationModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,22 +25,29 @@ public class AuthController {
     @Autowired
     private final AuthenticationManager authenticationManager;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    @Autowired
+    private final JwtService jwtService;
+
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
         String password = credentials.get("password");
+
         Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        String token = jwtService.generateToken((UserPresentationModel) authentication.getPrincipal());
+
         Map<String, String> response = new HashMap<>();
-        response.put("Great job!", "Login Successful!");
+        response.put("token", token);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
