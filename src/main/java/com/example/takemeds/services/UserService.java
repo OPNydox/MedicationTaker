@@ -1,8 +1,7 @@
 package com.example.takemeds.services;
 
-import com.example.takemeds.configurations.SecurityConfig;
-import com.example.takemeds.entities.Role;
 import com.example.takemeds.entities.User;
+import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
 import com.example.takemeds.repositories.UserRepository;
@@ -30,16 +29,16 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
 
         roleService.createRole("USER");
-        UserPresentationModel baseUser = new UserPresentationModel.UserPresentationModelBuilder().name("user")
-                .username("user").password("123").roles(List.of(new RolePresentationModel("USER"))).build();
+
+        RegistrationPresentationModel baseUser = new RegistrationPresentationModel("user", "user", "123");
 
         createUser(baseUser);
     }
 
-    public User createUser(UserPresentationModel model) {
+    public User createUser(RegistrationPresentationModel model) {
         User newUser = new User();
 
-        newUser.setEmail(model.getUsername());
+        newUser.setEmail(model.getEmail());
         newUser.setName(model.getName());
         newUser.setPassword(passwordEncoder.encode(model.getPassword()));
         newUser.setRole(roleService.findRole("USER"));

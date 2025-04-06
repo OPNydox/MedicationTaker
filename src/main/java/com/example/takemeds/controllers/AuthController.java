@@ -1,7 +1,11 @@
 package com.example.takemeds.controllers;
 
 import com.example.takemeds.configurations.JwtService;
+import com.example.takemeds.entities.User;
+import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
+import com.example.takemeds.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +32,13 @@ public class AuthController {
     @Autowired
     private final JwtService jwtService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    @Autowired
+    private final UserService userService;
+
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -49,5 +57,12 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegistrationPresentationModel> register(@RequestBody @Valid RegistrationPresentationModel registerDetails) {
+        User newUser = userService.createUser(registerDetails);
+        RegistrationPresentationModel result = new RegistrationPresentationModel(newUser.getName(), newUser.getEmail());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
