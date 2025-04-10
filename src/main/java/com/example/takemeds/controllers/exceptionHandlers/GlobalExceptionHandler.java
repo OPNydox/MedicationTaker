@@ -15,32 +15,45 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConstraintViolation(DataIntegrityViolationException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Database constraint violation: " + ex.getRootCause().getMessage());
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(DataIntegrityViolationException ex) {
+        ErrorResponse error = new ErrorResponse();
+        String exMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : "";
+        error.setMessage("Database constraint violation: " + exMessage);
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setTimestamp(System.currentTimeMillis());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(EntityNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Entity not found: " + ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse();
+
+        error.setMessage("Entity not found: " + ex.getMessage());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setTimestamp(System.currentTimeMillis());
+
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Something went wrong: " + ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage("Something went wrong: " + ex.getMessage());
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setTimestamp(System.currentTimeMillis());
+
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {
-        Map<String, String> body = new HashMap<>();
-        body.put("message", exception.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(exception.getMessage());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
