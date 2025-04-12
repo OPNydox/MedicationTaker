@@ -69,7 +69,7 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(token).build().parseSignedClaims(token).getBody();
+        return Jwts.parser().verifyWith(keyPair.getPublic()).build().parseSignedClaims(token).getPayload();
     }
 
     public Date extractExpiration(String token) {
