@@ -41,7 +41,8 @@ public class DosageService {
         }
 
         dosage.setFrequency(frequency);
-        dosage.setScheduledTime(dosagePM.getScheduledTime());
+        dosage.setTimesToTake(dosagePM.getTimesToTake());
+        dosage.setTimesPerDay(dosagePM.getTimesPerDay());
         dosage.setMedication(medication);
 
         return dosageRepository.save(dosage);

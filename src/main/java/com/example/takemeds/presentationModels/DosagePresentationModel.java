@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,5 +17,11 @@ public class DosagePresentationModel {
 
     private String frequency;
 
-    private LocalDateTime scheduledTime;
+    private byte timesPerDay;
+
+    private List<LocalTime> timesToTake;
+
+    public DosagePresentationModel() {
+        setTimesToTake(new ArrayList<>());
+    }
 }

@@ -20,7 +20,7 @@ public class MedicationPresentationModel {
     @Size(max = 500, message = "Medication description cannot exceed 500 symbols")
     private String description;
 
-    private List<Long> dosages;
+    private Long dosage;
 
     private long user;
 }

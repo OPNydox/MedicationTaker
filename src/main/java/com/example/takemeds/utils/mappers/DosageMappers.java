@@ -10,7 +10,8 @@ public class DosageMappers {
 
         output.setFrequency(input.getFrequency().toString());
         output.setMedicationId(input.getMedication().getId());
-        output.setScheduledTime(input.getScheduledTime());
+        output.setTimesPerDay(input.getTimesPerDay());
+        output.setTimesToTake(input.getTimesToTake());
 
         return output;
     }

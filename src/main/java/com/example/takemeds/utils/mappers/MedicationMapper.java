@@ -19,26 +19,15 @@ public class MedicationMapper {
         output.setId(input.getId());
         output.setName(input.getName());
         output.setDescription(input.getDescription());
-        output.setDosages(getDosages(input));
+
+        if (input.getDosage() != null) {
+            output.setDosage(input.getDosage().getId());
+        }
 
         if (input.getUser() != null) {
             output.setUser(input.getUser().getId());
         }
 
         return output;
-    }
-
-    private static List<Long> getDosages(Medication input) {
-        List<Long> dosageIds = new ArrayList<>();
-
-        if (input == null || input.getDosages() == null) {
-            return dosageIds;
-        }
-
-        for (Dosage dosage : input.getDosages()) {
-            dosageIds.add(dosage.getId());
-        }
-
-        return dosageIds;
     }
 }

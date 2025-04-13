@@ -12,6 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +24,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "medications")
 public class Medication {
 
     @Id
@@ -38,13 +43,10 @@ public class Medication {
     @Lob
     private byte[] image; // Store image of the medication
 
-    @OneToMany(mappedBy = "medication", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Dosage> dosages;
+    @OneToOne(mappedBy = "medication")
+    private Dosage dosage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-
-
 }
