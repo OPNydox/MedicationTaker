@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/med/medication")
 public class MedicationController {
-    private MedicationService medicationService;
+    private final MedicationService medicationService;
 
     public MedicationController(MedicationService medicationService) {
         this.medicationService = medicationService;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/med/dosage")
 public class DosageController {
 
-    private DosageService dosageService;
+    private final DosageService dosageService;
 
     public DosageController(DosageService dosageService) {
         this.dosageService = dosageService;

@@ -48,11 +48,14 @@ public class UserService implements UserDetailsService {
         return newUser;
     }
 
-    public UserPresentationModel getUser(String email) {
-        User foundUser = repository.findByEmail(email);
+    public User getUser(String username) {
+        User foundUser = repository.findByEmail(username);
 
-        return UserPresentationModel.builder().username(foundUser.getEmail())
-                                              .name(foundUser.getName()).build();
+        if (foundUser == null) {
+            throw new UsernameNotFoundException("User with username " + username + "not found.");
+        }
+
+        return foundUser;
     }
 
     public UserPresentationModel getUser(Long id) {
