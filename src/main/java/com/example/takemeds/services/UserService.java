@@ -78,4 +78,8 @@ public class UserService implements UserDetailsService {
                                                                  .roles(List.of(new RolePresentationModel(foundUser.getRole().toString())))
                                                                  .password(foundUser.getPassword()).build();
     }
+
+    public User saveUser(User user) {
+        return repository.save(user);
+    }
 }
