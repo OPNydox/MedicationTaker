@@ -24,10 +24,6 @@ public class MedicationMapper {
             output.setDosage(input.getDosage().getId());
         }
 
-        if (input.getUser() != null) {
-            output.setUser(input.getUser().getId());
-        }
-
         return output;
     }
 }

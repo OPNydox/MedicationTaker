@@ -35,8 +35,8 @@ public class UserActionController {
     }
 
     @PostMapping("/assign/medication/{id}")
-    private ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long medicationId) {
-        MedicationPresentationModel medication = medicationService.selfAssignMedication(userDetails, medicationId);
+    private ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        MedicationPresentationModel medication = medicationService.selfAssignMedication(userDetails, id);
         return new ResponseEntity<>(medication, HttpStatus.OK);
     }
 }

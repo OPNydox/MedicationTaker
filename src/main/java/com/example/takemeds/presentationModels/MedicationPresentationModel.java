@@ -21,6 +21,4 @@ public class MedicationPresentationModel {
     private String description;
 
     private Long dosage;
-
-    private long user;
 }

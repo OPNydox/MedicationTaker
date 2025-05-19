@@ -55,7 +55,9 @@ public class MedicationService {
 
     private Medication assignMedicationToUser(Medication medication, User user) {
         user.getMedicationToTake().add(medication);
+        medication.getUsers().add(user);
         userService.saveUser(user);
+
         return medicationRepository.save(medication);
     }
 }
