@@ -26,4 +26,14 @@ public class MedicationMapper {
 
         return output;
     }
+
+    public static List<MedicationPresentationModel> mapMedicationsToPM(List<Medication> input) {
+        List<MedicationPresentationModel> result = new ArrayList<>();
+
+        for (Medication medication : input) {
+            result.add(mapEntityToPM(medication));
+        }
+
+        return result;
+    }
 }

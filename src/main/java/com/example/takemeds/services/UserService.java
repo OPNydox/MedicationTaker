@@ -1,10 +1,13 @@
 package com.example.takemeds.services;
 
+import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
+import com.example.takemeds.presentationModels.MedicationPresentationModel;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
 import com.example.takemeds.repositories.UserRepository;
+import com.example.takemeds.utils.mappers.MedicationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -81,5 +84,12 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(User user) {
         return repository.save(user);
+    }
+
+    public List<MedicationPresentationModel> showMedicationForUser(String username) {
+        User user = getUser(username);
+        List<Medication> medications = user.getMedicationToTake();
+
+        return MedicationMapper.mapMedicationsToPM(medications);
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/med/user")
 public class UserActionController {
@@ -23,9 +25,12 @@ public class UserActionController {
 
     private final MedicationService medicationService;
 
-    public UserActionController(MedicationLogService medicationLogService, MedicationService medicationService) {
+    private final UserService userService;
+
+    public UserActionController(MedicationLogService medicationLogService, MedicationService medicationService, UserService userService) {
         this.medicationLogService = medicationLogService;
         this.medicationService = medicationService;
+        this.userService = userService;
     }
 
     @PostMapping("/take/{id}")
@@ -38,5 +43,11 @@ public class UserActionController {
     private ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         MedicationPresentationModel medication = medicationService.selfAssignMedication(userDetails, id);
         return new ResponseEntity<>(medication, HttpStatus.OK);
+    }
+
+    @PostMapping("/show/my/medication/")
+    private ResponseEntity<List<MedicationPresentationModel>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationPresentationModel> medications = userService.showMedicationForUser(userDetails.getUsername());
+        return new ResponseEntity<>(medications, HttpStatus.OK);
     }
 }
