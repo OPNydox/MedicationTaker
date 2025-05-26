@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,26 +37,32 @@ public class UserActionController {
     }
 
     @PostMapping("/take/{id}")
-    private ResponseEntity<MedLogPresentationModel> takeMedication(@AuthenticationPrincipal UserDetails userDetails,  @PathVariable Long id) {
+    public ResponseEntity<MedLogPresentationModel> takeMedication(@AuthenticationPrincipal UserDetails userDetails,  @PathVariable Long id) {
         MedLogPresentationModel logPresentationModel = this.medicationLogService.takeMedication(userDetails.getUsername(), id);
         return new ResponseEntity<>(logPresentationModel, HttpStatus.OK);
     }
 
     @PostMapping("/assign/medication/{id}")
-    private ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         MedicationPresentationModel medication = medicationService.selfAssignMedication(userDetails, id);
         return new ResponseEntity<>(medication, HttpStatus.OK);
     }
 
     @PostMapping("/show/my/medication/")
-    private ResponseEntity<List<MedicationPresentationModel>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<MedicationPresentationModel>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
         List<MedicationPresentationModel> medications = userService.showMedicationForUser(userDetails.getUsername());
         return new ResponseEntity<>(medications, HttpStatus.OK);
     }
 
     @PutMapping("/edit/my/medication")
-    private ResponseEntity<MedicationPresentationModel> editMyMedication(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MedicationPresentationModel medication) {
+    public ResponseEntity<MedicationPresentationModel> editMyMedication(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MedicationPresentationModel medication) {
         MedicationPresentationModel result = medicationService.editMedication(userDetails, medication);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/show/my/medication")
+    public ResponseEntity<List<MedicationPresentationModel>> showMyMedications(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationPresentationModel> result = medicationService.findMedicationsForUser(userDetails);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

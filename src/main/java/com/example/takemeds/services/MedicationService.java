@@ -74,4 +74,9 @@ public class MedicationService {
 
         return MedicationMapper.mapEntityToPM(medication);
     }
+
+    public List<MedicationPresentationModel> findMedicationsForUser(UserDetails userDetails) {
+        User user = userService.getUser(userDetails.getUsername());
+        return MedicationMapper.mapMedicationsToPM(user.getMedicationToTake());
+    }
 }
