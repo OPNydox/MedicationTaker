@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,5 +51,11 @@ public class UserActionController {
     private ResponseEntity<List<MedicationPresentationModel>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
         List<MedicationPresentationModel> medications = userService.showMedicationForUser(userDetails.getUsername());
         return new ResponseEntity<>(medications, HttpStatus.OK);
+    }
+
+    @PutMapping("/edit/my/medication")
+    private ResponseEntity<MedicationPresentationModel> editMyMedication(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MedicationPresentationModel medication) {
+        MedicationPresentationModel result = medicationService.editMedication(userDetails, medication);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

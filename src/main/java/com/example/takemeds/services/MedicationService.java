@@ -61,4 +61,17 @@ public class MedicationService {
 
         return medicationRepository.save(medication);
     }
+
+    public MedicationPresentationModel editMedication(UserDetails userDetails, MedicationPresentationModel medicationUpdate) {
+        User user = userService.getUser(userDetails.getUsername());
+        Medication medication = user.getMedicationToTake().stream()
+                .filter(entity -> entity.getId() == medicationUpdate.getId()).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationUpdate.getId() + "does not exist or is not assigned."));
+        medication.setName(medicationUpdate.getName());
+        medication.setDescription(medicationUpdate.getDescription());
+
+        medication = medicationRepository.save(medication);
+
+        return MedicationMapper.mapEntityToPM(medication);
+    }
 }
