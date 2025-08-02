@@ -1,5 +1,6 @@
 package com.example.takemeds.controllers;
 
+import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.MedicationPresentationModel;
 import com.example.takemeds.services.MedicationService;
 import jakarta.validation.Valid;
@@ -20,8 +21,8 @@ public class MedicationController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<MedicationPresentationModel> createMedication(@RequestBody @Valid MedicationPresentationModel medicationPM) {
-       MedicationPresentationModel createdMedication = medicationService.createMedicationPM(medicationPM);
+    public ResponseEntity<MedicationPresentationModel> createMedication(@RequestBody @Valid MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
+       MedicationPresentationModel createdMedication = medicationService.createMedication(medicationPM);
        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
     }
 }

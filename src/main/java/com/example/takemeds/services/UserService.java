@@ -25,11 +25,14 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final MedicationMapper medicationMapper;
+
     @Autowired
-    public UserService(UserRepository repository, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, RoleService roleService, PasswordEncoder passwordEncoder, MedicationMapper medicationMapper) {
         this.roleService = roleService;
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.medicationMapper = medicationMapper;
 
         roleService.createRole("USER");
 
@@ -90,6 +93,6 @@ public class UserService implements UserDetailsService {
         User user = getUser(username);
         List<Medication> medications = user.getMedicationToTake();
 
-        return MedicationMapper.mapMedicationsToPM(medications);
+        return medicationMapper.mapMedicationsToPM(medications);
     }
 }

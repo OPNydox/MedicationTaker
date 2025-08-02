@@ -1,50 +1,39 @@
 package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Dosage;
-import com.example.takemeds.entities.Medication;
-import com.example.takemeds.entities.enums.Frequency;
-import com.example.takemeds.exceptions.InvalidDosageException;
+import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.DosagePresentationModel;
 import com.example.takemeds.repositories.DosageRepository;
-import com.example.takemeds.utils.StringUtilities;
 import com.example.takemeds.utils.mappers.DosageMappers;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class DosageService {
 
     private final DosageRepository dosageRepository;
 
-    private final MedicationService medicationService;
+    private final DosageMappers dosageMapper;
 
-    public DosageService(DosageRepository dosageRepository, MedicationService medicationService) {
+    public DosageService(DosageRepository dosageRepository, DosageMappers dosageMapper) {
         this.dosageRepository = dosageRepository;
-        this.medicationService = medicationService;
+        this.dosageMapper = dosageMapper;
     }
 
-    public DosagePresentationModel createDosagePM(DosagePresentationModel dosagePM) throws InvalidDosageException {
-        Dosage newDosage = createDosage(dosagePM);
+    public DosagePresentationModel createDosage(DosagePresentationModel dosagePM) throws InvalidFrequencyException {
+        Dosage newDosage = dosageMapper.PMtoEntity(dosagePM);
 
-        return DosageMappers.entityToPM(newDosage);
+        return dosageMapper.entityToPM(dosageRepository.save(newDosage));
     }
 
-    public Dosage createDosage(DosagePresentationModel dosagePM) throws InvalidDosageException {
-        Dosage dosage = new Dosage();
-        Frequency frequency;
+    public DosagePresentationModel findDosage(Long id) {
+        Optional<Dosage> foundDosage = dosageRepository.findById(id);
 
-        Medication medication = medicationService.findMedication(dosagePM.getMedicationId());
-
-        try {
-            frequency = StringUtilities.frequencyFromString(dosagePM.getFrequency());
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidDosageException("Frequency type: " + dosagePM.getFrequency() + " does not exist.");
+        if (foundDosage.isEmpty()) {
+            throw new EntityNotFoundException("Dosage with id " + id + " could not be found.");
         }
-
-        dosage.setFrequency(frequency);
-        dosage.setTimesToTake(dosagePM.getTimesToTake());
-        dosage.setTimesPerDay(dosagePM.getTimesPerDay());
-        dosage.setMedication(medication);
-
-        return dosageRepository.save(dosage);
+        return dosageMapper.entityToPM(foundDosage.get());
     }
 }

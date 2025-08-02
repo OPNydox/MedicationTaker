@@ -1,33 +1,34 @@
 package com.example.takemeds.utils.mappers;
 
-import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
+import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.MedicationPresentationModel;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class MedicationMapper {
 
-    public static MedicationPresentationModel mapEntityToPM(Medication input) {
-        MedicationPresentationModel output = new MedicationPresentationModel();
+    private final DosageMappers dosageMapper;
 
-        if (input == null) {
-            return output;
-        }
-
-        output.setId(input.getId());
-        output.setName(input.getName());
-        output.setDescription(input.getDescription());
-
-        if (input.getDosage() != null) {
-            output.setDosage(input.getDosage().getId());
-        }
-
-        return output;
+    public MedicationMapper(DosageMappers dosageMapper) {
+        this.dosageMapper = dosageMapper;
     }
 
-    public static List<MedicationPresentationModel> mapMedicationsToPM(List<Medication> input) {
+    public MedicationPresentationModel mapEntityToPM(Medication medication) {
+        if (medication == null) {
+            return null;
+        }
+
+        return MedicationPresentationModel.builder().id(medication.getId())
+                                                    .name(medication.getName())
+                                                    .description(medication.getDescription())
+                                                    .defaultDosage(dosageMapper.entityToPM(medication.getDosage())).build();
+    }
+
+    public List<MedicationPresentationModel> mapMedicationsToPM(List<Medication> input) {
         List<MedicationPresentationModel> result = new ArrayList<>();
 
         for (Medication medication : input) {
@@ -35,5 +36,16 @@ public class MedicationMapper {
         }
 
         return result;
+    }
+
+    public Medication presentationModelToEntity(MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
+        if (medicationPM == null) {
+            return null;
+        }
+
+        return Medication.builder().id(medicationPM.getId())
+                                   .name(medicationPM.getName())
+                                   .description(medicationPM.getDescription())
+                                   .dosage(dosageMapper.PMtoEntity(medicationPM.getDefaultDosage())).build();
     }
 }

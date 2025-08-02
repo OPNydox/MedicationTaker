@@ -19,6 +19,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+@Builder
 @Getter
 @Setter
 @Table(name = "dosages")

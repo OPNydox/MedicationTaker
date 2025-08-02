@@ -1,9 +1,12 @@
 package com.example.takemeds.services;
 
+import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
+import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.MedicationPresentationModel;
 import com.example.takemeds.repositories.MedicationRepository;
+import com.example.takemeds.utils.mappers.DosageMappers;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,25 +19,34 @@ import java.util.Optional;
 public class MedicationService {
     private final MedicationRepository medicationRepository;
 
+    private final DosageService dosageService;
+
     private final UserService userService;
 
-    public MedicationService(MedicationRepository medicationRepository, UserService userService) {
+    private final MedicationMapper medicationMapper;
+
+    private final DosageMappers dosageMapper;
+
+    public MedicationService(MedicationRepository medicationRepository, DosageService dosageService, UserService userService, MedicationMapper medicationMapper, DosageMappers dosageMapper) {
         this.medicationRepository = medicationRepository;
+        this.dosageService = dosageService;
         this.userService = userService;
+        this.medicationMapper = medicationMapper;
+        this.dosageMapper = dosageMapper;
     }
 
-    public MedicationPresentationModel createMedicationPM(MedicationPresentationModel medicationPM) {
-        Medication createdMedication = createMedication(medicationPM);
-        return MedicationMapper.mapEntityToPM(createdMedication);
-    }
-
-    public Medication createMedication(MedicationPresentationModel medicationPM) {
-        Medication medication = new Medication();
-
-        medication.setName(medicationPM.getName());
-        medication.setDescription(medicationPM.getDescription());
-
-        return medicationRepository.save(medication);
+    public MedicationPresentationModel createMedication(MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
+        Medication createdMedication = medicationMapper.presentationModelToEntity(medicationPM);
+        Dosage dosage;
+        if (medicationPM.getDefaultDosage() != null) {
+            try {
+                dosage =  dosageMapper.PMtoEntity(dosageService.findDosage(createdMedication.getDosage().getId()));
+            } catch (EntityNotFoundException ex) {
+                dosage = dosageMapper.PMtoEntity(dosageService.createDosage(medicationPM.getDefaultDosage()));
+            }
+            createdMedication.setDosage(dosage);
+        }
+        return medicationMapper.mapEntityToPM(medicationRepository.save(createdMedication));
     }
 
     public Medication findMedication(long id) {
@@ -51,7 +63,7 @@ public class MedicationService {
         User user = userService.getUser(userDetails.getUsername());
         Medication medication = findMedication(medId);
 
-        return MedicationMapper.mapEntityToPM(assignMedicationToUser(medication, user));
+        return medicationMapper.mapEntityToPM(assignMedicationToUser(medication, user));
     }
 
     private Medication assignMedicationToUser(Medication medication, User user) {
@@ -72,11 +84,11 @@ public class MedicationService {
 
         medication = medicationRepository.save(medication);
 
-        return MedicationMapper.mapEntityToPM(medication);
+        return medicationMapper.mapEntityToPM(medication);
     }
 
     public List<MedicationPresentationModel> findMedicationsForUser(UserDetails userDetails) {
         User user = userService.getUser(userDetails.getUsername());
-        return MedicationMapper.mapMedicationsToPM(user.getMedicationToTake());
+        return medicationMapper.mapMedicationsToPM(user.getMedicationToTake());
     }
 }

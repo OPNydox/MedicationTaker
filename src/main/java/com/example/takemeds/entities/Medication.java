@@ -17,6 +17,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,12 +27,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "medications")
 public class Medication {
-
-    public Medication() {
-        users = new ArrayList<>();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,13 +2,13 @@ package com.example.takemeds.presentationModels;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
+@Builder
 public class MedicationPresentationModel {
     private long id;
 
@@ -20,5 +20,5 @@ public class MedicationPresentationModel {
     @Size(max = 500, message = "Medication description cannot exceed 500 symbols")
     private String description;
 
-    private Long dosage;
+    private DosagePresentationModel defaultDosage;
 }
