@@ -11,12 +11,6 @@ import java.util.List;
 @Component
 public class MedicationMapper {
 
-    private final DosageMappers dosageMapper;
-
-    public MedicationMapper(DosageMappers dosageMapper) {
-        this.dosageMapper = dosageMapper;
-    }
-
     public MedicationPresentationModel mapEntityToPM(Medication medication) {
         if (medication == null) {
             return null;
@@ -24,8 +18,7 @@ public class MedicationMapper {
 
         return MedicationPresentationModel.builder().id(medication.getId())
                                                     .name(medication.getName())
-                                                    .description(medication.getDescription())
-                                                    .defaultDosage(dosageMapper.entityToPM(medication.getDosage())).build();
+                                                    .description(medication.getDescription()).build();
     }
 
     public List<MedicationPresentationModel> mapMedicationsToPM(List<Medication> input) {
@@ -38,14 +31,13 @@ public class MedicationMapper {
         return result;
     }
 
-    public Medication presentationModelToEntity(MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
+    public Medication presentationModelToEntity(MedicationPresentationModel medicationPM)  {
         if (medicationPM == null) {
             return null;
         }
 
         return Medication.builder().id(medicationPM.getId())
                                    .name(medicationPM.getName())
-                                   .description(medicationPM.getDescription())
-                                   .dosage(dosageMapper.PMtoEntity(medicationPM.getDefaultDosage())).build();
+                                   .description(medicationPM.getDescription()).build();
     }
 }

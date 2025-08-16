@@ -6,7 +6,7 @@ import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.MedicationPresentationModel;
 import com.example.takemeds.repositories.MedicationRepository;
-import com.example.takemeds.utils.mappers.DosageMappers;
+import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,9 +25,9 @@ public class MedicationService {
 
     private final MedicationMapper medicationMapper;
 
-    private final DosageMappers dosageMapper;
+    private final DosageMapper dosageMapper;
 
-    public MedicationService(MedicationRepository medicationRepository, DosageService dosageService, UserService userService, MedicationMapper medicationMapper, DosageMappers dosageMapper) {
+    public MedicationService(MedicationRepository medicationRepository, DosageService dosageService, UserService userService, MedicationMapper medicationMapper, DosageMapper dosageMapper) {
         this.medicationRepository = medicationRepository;
         this.dosageService = dosageService;
         this.userService = userService;

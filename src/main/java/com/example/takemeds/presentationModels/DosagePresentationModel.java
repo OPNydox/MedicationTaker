@@ -1,19 +1,18 @@
 package com.example.takemeds.presentationModels;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class DosagePresentationModel {
-    @NotNull(message = "Medication id is required")
-    private long medicationId;
+    private MedicationPresentationModel medicationId;
 
     private String frequency;
 
@@ -21,7 +20,4 @@ public class DosagePresentationModel {
 
     private List<LocalTime> timesToTake;
 
-    public DosagePresentationModel() {
-        setTimesToTake(new ArrayList<>());
-    }
 }

@@ -2,24 +2,18 @@ package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.enums.Frequency;
-import com.example.takemeds.exceptions.InvalidDosageException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.DosagePresentationModel;
 import com.example.takemeds.utils.StringUtilities;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DosageMappers {
+public class DosageMapper {
 
     public DosagePresentationModel entityToPM(Dosage input) {
-        DosagePresentationModel output = new DosagePresentationModel();
-
-        output.setFrequency(input.getFrequency().toString());
-        output.setMedicationId(input.getMedication().getId());
-        output.setTimesPerDay(input.getTimesPerDay());
-        output.setTimesToTake(input.getTimesToTake());
-
-        return output;
+        return DosagePresentationModel.builder().frequency(input.getFrequency().toString())
+                                                .timesPerDay(input.getTimesPerDay())
+                                                .timesToTake(input.getTimesToTake()).build();
     }
 
     public Dosage PMtoEntity(DosagePresentationModel dosage) throws InvalidFrequencyException {

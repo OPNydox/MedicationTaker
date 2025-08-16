@@ -4,7 +4,7 @@ import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.DosagePresentationModel;
 import com.example.takemeds.repositories.DosageRepository;
-import com.example.takemeds.utils.mappers.DosageMappers;
+import com.example.takemeds.utils.mappers.DosageMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +15,9 @@ public class DosageService {
 
     private final DosageRepository dosageRepository;
 
-    private final DosageMappers dosageMapper;
+    private final DosageMapper dosageMapper;
 
-    public DosageService(DosageRepository dosageRepository, DosageMappers dosageMapper) {
+    public DosageService(DosageRepository dosageRepository, DosageMapper dosageMapper) {
         this.dosageRepository = dosageRepository;
         this.dosageMapper = dosageMapper;
     }

@@ -20,10 +20,13 @@ public class MedicationLogService {
 
     MedicationTakenLogRepository medicationTakenLogRepository;
 
-    public MedicationLogService(UserService userService, MedicationService medicationService, MedicationTakenLogRepository medicationTakenLogRepository) {
+    MedTakenMapper medTakenMapper;
+
+    public MedicationLogService(UserService userService, MedicationService medicationService, MedicationTakenLogRepository medicationTakenLogRepository, MedTakenMapper medTakenMapper) {
         this.userService = userService;
         this.medicationService = medicationService;
         this.medicationTakenLogRepository = medicationTakenLogRepository;
+        this.medTakenMapper = medTakenMapper;
     }
 
     public MedLogPresentationModel takeMedication(String username, Long medicationId) {
@@ -33,7 +36,7 @@ public class MedicationLogService {
         MedicationTakenLog medicationTakenLog = createMedicationLog(user, medication);
         medicationTakenLog = medicationTakenLogRepository.save(medicationTakenLog);
 
-        return MedTakenMapper.entityToPM(medicationTakenLog);
+        return medTakenMapper.entityToPM(medicationTakenLog);
     }
 
     private MedicationTakenLog createMedicationLog(User user, Medication medication) {

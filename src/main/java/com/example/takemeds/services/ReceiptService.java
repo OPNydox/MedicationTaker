@@ -1,13 +1,12 @@
 package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Receipt;
-import com.example.takemeds.entities.UserMedication;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
 import com.example.takemeds.presentationModels.UserMedicationPresentationModel;
 import com.example.takemeds.repositories.ReceiptRepository;
-import com.example.takemeds.utils.mappers.ReceiptMappers;
+import com.example.takemeds.utils.mappers.ReceiptMapper;
 import com.example.takemeds.utils.mappers.UserMedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -21,11 +20,11 @@ public class ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
-    private final ReceiptMappers receiptMapper;
+    private final ReceiptMapper receiptMapper;
 
     private final UserMedicationMapper userMedicationMapper;
 
-    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMappers receiptMapper, UserMedicationMapper userMedicationMapper) {
+    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, UserMedicationMapper userMedicationMapper) {
         this.receiptRepository = receiptRepository;
         this.receiptMapper = receiptMapper;
         this.userMedicationMapper = userMedicationMapper;
