@@ -1,7 +1,7 @@
 package com.example.takemeds.controllers;
 
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
 import com.example.takemeds.services.MedicationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

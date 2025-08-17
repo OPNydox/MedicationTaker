@@ -1,8 +1,7 @@
 package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.Medication;
-import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -10,6 +9,8 @@ import java.util.List;
 
 @Component
 public class MedicationMapper {
+    public MedicationMapper() {
+    }
 
     public MedicationPresentationModel mapEntityToPM(Medication medication) {
         if (medication == null) {

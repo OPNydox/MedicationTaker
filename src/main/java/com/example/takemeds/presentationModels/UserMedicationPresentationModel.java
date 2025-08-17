@@ -1,5 +1,7 @@
 package com.example.takemeds.presentationModels;
 
+import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

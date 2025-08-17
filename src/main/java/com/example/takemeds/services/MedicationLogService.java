@@ -4,7 +4,6 @@ import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.MedicationTakenLog;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.presentationModels.MedLogPresentationModel;
-import com.example.takemeds.presentationModels.MedicationPresentationModel;
 import com.example.takemeds.repositories.MedicationTakenLogRepository;
 import com.example.takemeds.utils.mappers.MedTakenMapper;
 import org.springframework.stereotype.Service;

@@ -4,11 +4,12 @@ import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
 import com.example.takemeds.repositories.MedicationRepository;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -35,14 +36,15 @@ public class MedicationService {
         this.dosageMapper = dosageMapper;
     }
 
+    @Transactional
     public MedicationPresentationModel createMedication(MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
         Medication createdMedication = medicationMapper.presentationModelToEntity(medicationPM);
         Dosage dosage;
         if (medicationPM.getDefaultDosage() != null) {
             try {
-                dosage =  dosageMapper.PMtoEntity(dosageService.findDosage(createdMedication.getDosage().getId()));
+                dosage =  dosageMapper.mapDosagePMToEntity(dosageService.findDosage(createdMedication.getDosage().getId()));
             } catch (EntityNotFoundException ex) {
-                dosage = dosageMapper.PMtoEntity(dosageService.createDosage(medicationPM.getDefaultDosage()));
+                dosage = dosageMapper.mapDosagePMToEntity(dosageService.createAndMapDosage(medicationPM.getDefaultDosage()));
             }
             createdMedication.setDosage(dosage);
         }
@@ -90,5 +92,18 @@ public class MedicationService {
     public List<MedicationPresentationModel> findMedicationsForUser(UserDetails userDetails) {
         User user = userService.getUser(userDetails.getUsername());
         return medicationMapper.mapMedicationsToPM(user.getMedicationToTake());
+    }
+
+    public boolean addDefaultDosageToMedication(Dosage dosage, Long medicationId) {
+        if (medicationId == null || dosage == null) {
+            return false;
+        }
+
+        Medication medication = findMedication(medicationId);
+        medication.setDosage(dosage);
+
+        medicationRepository.save(medication);
+
+        return true;
     }
 }

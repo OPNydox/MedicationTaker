@@ -1,9 +1,8 @@
-package com.example.takemeds.utils;
+package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.User;
 import com.example.takemeds.entities.UserMedication;
 import com.example.takemeds.presentationModels.UserMedicationPresentationModel;
-import com.example.takemeds.utils.mappers.UserMedicationMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

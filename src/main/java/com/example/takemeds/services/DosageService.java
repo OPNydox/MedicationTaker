@@ -2,7 +2,8 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.DosagePresentationModel;
+import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
+import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.repositories.DosageRepository;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,10 +23,17 @@ public class DosageService {
         this.dosageMapper = dosageMapper;
     }
 
-    public DosagePresentationModel createDosage(DosagePresentationModel dosagePM) throws InvalidFrequencyException {
-        Dosage newDosage = dosageMapper.PMtoEntity(dosagePM);
 
-        return dosageMapper.entityToPM(dosageRepository.save(newDosage));
+    public DosagePresentationModel createAndMapDosage(BaseDosagePM dosagePM) throws InvalidFrequencyException {
+        Dosage newDosage = createDosageEntity(dosagePM);
+
+        return dosageMapper.mapEntityToDosagePM(dosageRepository.save(newDosage));
+    }
+
+    public Dosage createDosageEntity(BaseDosagePM dosagePM) throws InvalidFrequencyException {
+        Dosage newDosage = dosageMapper.mapDosagePMToEntity(dosagePM);
+
+        return dosageRepository.save(newDosage);
     }
 
     public DosagePresentationModel findDosage(Long id) {
@@ -34,6 +42,6 @@ public class DosageService {
         if (foundDosage.isEmpty()) {
             throw new EntityNotFoundException("Dosage with id " + id + " could not be found.");
         }
-        return dosageMapper.entityToPM(foundDosage.get());
+        return dosageMapper.mapEntityToDosagePM(foundDosage.get());
     }
 }

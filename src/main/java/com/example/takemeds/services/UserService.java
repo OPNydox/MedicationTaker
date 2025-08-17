@@ -2,7 +2,7 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
-import com.example.takemeds.presentationModels.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
