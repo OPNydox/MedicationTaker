@@ -1,7 +1,7 @@
 package com.example.takemeds.presentationModels;
 
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ public class UserMedicationPresentationModel {
     private Long id;
 
     private Long userID;
-    private MedicationPresentationModel medication;
+    private MedicationDosagePM medication;
     private DosagePresentationModel dosage;
 
 

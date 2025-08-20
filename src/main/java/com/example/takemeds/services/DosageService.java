@@ -27,21 +27,31 @@ public class DosageService {
     public DosagePresentationModel createAndMapDosage(BaseDosagePM dosagePM) throws InvalidFrequencyException {
         Dosage newDosage = createDosageEntity(dosagePM);
 
-        return dosageMapper.mapEntityToDosagePM(dosageRepository.save(newDosage));
+        return dosageMapper.mapEntityToPM(dosageRepository.save(newDosage));
     }
 
     public Dosage createDosageEntity(BaseDosagePM dosagePM) throws InvalidFrequencyException {
-        Dosage newDosage = dosageMapper.mapDosagePMToEntity(dosagePM);
+        Dosage newDosage = dosageMapper.mapPMToEntity(dosagePM);
 
         return dosageRepository.save(newDosage);
     }
 
     public DosagePresentationModel findDosage(Long id) {
+        return dosageMapper.mapEntityToPM(findDosageEntity(id));
+    }
+
+    protected Dosage findDosageEntity(Long id) {
         Optional<Dosage> foundDosage = dosageRepository.findById(id);
 
         if (foundDosage.isEmpty()) {
             throw new EntityNotFoundException("Dosage with id " + id + " could not be found.");
         }
-        return dosageMapper.mapEntityToDosagePM(foundDosage.get());
+        return foundDosage.get();
+    }
+
+
+
+    protected Dosage saveDosage(Dosage dosage) {
+        return dosageRepository.save(dosage);
     }
 }

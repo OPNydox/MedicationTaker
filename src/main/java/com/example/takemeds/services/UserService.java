@@ -2,7 +2,7 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
@@ -89,7 +89,7 @@ public class UserService implements UserDetailsService {
         return repository.save(user);
     }
 
-    public List<MedicationPresentationModel> showMedicationForUser(String username) {
+    public List<MedicationDosagePM> showMedicationForUser(String username) {
         User user = getUser(username);
         List<Medication> medications = user.getMedicationToTake();
 

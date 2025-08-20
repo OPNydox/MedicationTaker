@@ -1,7 +1,9 @@
 package com.example.takemeds.controllers;
 
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosageRefPM;
 import com.example.takemeds.services.MedicationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,20 @@ public class MedicationController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<MedicationPresentationModel> createMedication(@RequestBody @Valid MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
-       MedicationPresentationModel createdMedication = medicationService.createMedication(medicationPM);
+    public ResponseEntity<MedicationDosagePM> createMedication(@RequestBody @Valid BaseMedicationPM medicationPM) {
+       MedicationDosagePM createdMedication = medicationService.createMedication(medicationPM);
        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
+    }
+
+    @PostMapping("/create/with-dosage")
+    public ResponseEntity<MedicationDosagePM> createMedicationWithDosage(@RequestBody @Valid MedicationDosagePM medication) throws InvalidFrequencyException {
+        MedicationDosagePM createdMedication = medicationService.createMedication(medication);
+        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
+    }
+
+    @PostMapping("/create/with-dosage-reference")
+    public ResponseEntity<MedicationDosagePM> createMedicationWithDosageRef(@RequestBody @Valid MedicationDosageRefPM medication) throws InvalidFrequencyException {
+        MedicationDosagePM createdMedication = medicationService.createMedication(medication);
+        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
     }
 }

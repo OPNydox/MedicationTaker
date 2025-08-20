@@ -3,6 +3,7 @@ package com.example.takemeds.utils.mappers;
 import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.enums.Frequency;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.utils.StringUtilities;
@@ -10,6 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalTime;
@@ -19,27 +24,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class DosageMapperTest {
-
+    @InjectMocks
     private DosageMapper dosageMapper;
 
+    @Mock
     private StringUtilities stringUtilities;
 
-    @BeforeEach
-    void setUp() {
-        stringUtilities = new StringUtilities();
-        dosageMapper = new DosageMapper(stringUtilities);
-    }
-
-
     @Nested
-    @DisplayName("When mapping from Dosage entity to Presentation Model")
-    class EntityToPresentationModelTests {
+    @DisplayName("When mapping from an entity to a presentation model")
+    class EntityToPMTests {
 
         @Test
-        @DisplayName("should correctly map a Dosage to DosagePresentationModel")
-        void mapEntityToDosagePM_shouldMapCorrectly() {
+        @DisplayName("should correctly map a Dosage entity to a DosagePresentationModel")
+        void mapEntityToPM_shouldMapCorrectly() {
             // Arrange
             Dosage dosage = Dosage.builder()
                     .frequency(Frequency.DAILY)
@@ -48,7 +47,7 @@ public class DosageMapperTest {
                     .build();
 
             // Act
-            DosagePresentationModel dosagePM = dosageMapper.mapEntityToDosagePM(dosage);
+            DosagePresentationModel dosagePM = dosageMapper.mapEntityToPM(dosage);
 
             // Assert
             assertThat(dosagePM).isNotNull();
@@ -58,8 +57,8 @@ public class DosageMapperTest {
         }
 
         @Test
-        @DisplayName("should correctly map a Dosage to CreateDosagePM")
-        void mapEntityToCreateDosagePM_shouldMapCorrectly() {
+        @DisplayName("should correctly map a Dosage entity to a CreateDosagePM")
+        void mapEntityToCreatePM_shouldMapCorrectly() {
             // Arrange
             Dosage dosage = Dosage.builder()
                     .frequency(Frequency.WEEKLY)
@@ -68,7 +67,7 @@ public class DosageMapperTest {
                     .build();
 
             // Act
-            CreateDosagePM createDosagePM = dosageMapper.mapEntityToCreateDosagePM(dosage);
+            CreateDosagePM createDosagePM = dosageMapper.mapEntityToCreatePM(dosage);
 
             // Assert
             assertThat(createDosagePM).isNotNull();
@@ -79,41 +78,24 @@ public class DosageMapperTest {
     }
 
     @Nested
-    @DisplayName("When mapping from Presentation Model to Dosage entity")
-    class PresentationModelToEntityTests {
+    @DisplayName("When mapping from a presentation model to an entity")
+    class PMToEntityTests {
 
         @Test
-        @DisplayName("should correctly map a CreateDosagePM to a Dosage entity")
-        void mapCreateDosagePMToEntity_shouldMapCorrectly() throws InvalidFrequencyException {
+        @DisplayName("should correctly map a BaseDosagePM to a Dosage entity")
+        void mapPMToEntity_shouldMapCorrectly_fromBaseDosagePM() throws InvalidFrequencyException {
             // Arrange
-            CreateDosagePM createDosagePM = CreateDosagePM.builder()
-                    .frequency("DAILY")
-                    .timesPerDay((byte) 3)
-                    .timesToTake(List.of(LocalTime.of(8, 0), LocalTime.of(14, 0), LocalTime.of(20, 0)))
-                    .build();
-
-            // Act
-            Dosage dosage = dosageMapper.mapCreateDosagePMToEntity(createDosagePM);
-
-            // Assert
-            assertThat(dosage).isNotNull();
-            assertThat(dosage.getFrequency()).isEqualTo(Frequency.DAILY);
-            assertThat(dosage.getTimesPerDay()).isEqualTo((byte) 3);
-            assertThat(dosage.getTimesToTake()).containsExactly(LocalTime.of(8, 0), LocalTime.of(14, 0), LocalTime.of(20, 0));
-        }
-
-        @Test
-        @DisplayName("should correctly map a DosagePresentationModel to a Dosage entity")
-        void mapDosagePMToEntity_shouldMapCorrectly() throws InvalidFrequencyException {
-            // Arrange
-            DosagePresentationModel dosagePM = DosagePresentationModel.builder()
+            BaseDosagePM baseDosagePM = BaseDosagePM.builder()
                     .frequency("AS_NEEDED")
                     .timesPerDay((byte) 0)
                     .timesToTake(List.of())
                     .build();
 
+            // Mock the dependency call
+            when(stringUtilities.frequencyFromString("AS_NEEDED")).thenReturn(Frequency.AS_NEEDED);
+
             // Act
-            Dosage dosage = dosageMapper.mapDosagePMToEntity(dosagePM);
+            Dosage dosage = dosageMapper.mapPMToEntity(baseDosagePM);
 
             // Assert
             assertThat(dosage).isNotNull();
@@ -123,18 +105,43 @@ public class DosageMapperTest {
         }
 
         @Test
-        @DisplayName("should throw InvalidFrequencyException for an invalid frequency string")
-        void mapToEntity_withInvalidFrequency_shouldThrowException() {
+        @DisplayName("should correctly map a CreateDosagePM to a Dosage entity")
+        void mapPMToEntity_shouldMapCorrectly_fromCreateDosagePM() throws InvalidFrequencyException {
             // Arrange
             CreateDosagePM createDosagePM = CreateDosagePM.builder()
-                    .frequency("INVALID_FREQ")
-                    .timesPerDay((byte) 1)
+                    .medicationId(1L)
+                    .frequency("DAILY")
+                    .timesPerDay((byte) 3)
+                    .timesToTake(List.of(LocalTime.of(8, 0), LocalTime.of(14, 0), LocalTime.of(20, 0)))
                     .build();
 
-            // Mock the static method to throw the exception
+            // Mock the dependency call
+            when(stringUtilities.frequencyFromString("DAILY")).thenReturn(Frequency.DAILY);
+
+            // Act
+            Dosage dosage = dosageMapper.mapPMToEntity(createDosagePM);
+
+            // Assert
+            assertThat(dosage).isNotNull();
+            assertThat(dosage.getFrequency()).isEqualTo(Frequency.DAILY);
+            assertThat(dosage.getTimesPerDay()).isEqualTo((byte) 3);
+            assertThat(dosage.getTimesToTake()).containsExactly(LocalTime.of(8, 0), LocalTime.of(14, 0), LocalTime.of(20, 0));
+        }
+
+        @Test
+        @DisplayName("should throw InvalidFrequencyException for an invalid frequency string")
+        void mapPMToEntity_withInvalidFrequency_shouldThrowException() throws InvalidFrequencyException {
+            // Arrange
+            BaseDosagePM baseDosagePM = BaseDosagePM.builder()
+                    .frequency("INVALID_FREQ")
+                    .build();
+
+            // Mock the dependency to throw the exception
+            when(stringUtilities.frequencyFromString("INVALID_FREQ")).thenThrow(new InvalidFrequencyException("Invalid frequency string."));
+
+            // Act & Assert
             assertThrows(InvalidFrequencyException.class, () -> {
-                when(stringUtilities.frequencyFromString("INVALID_FREQ")).thenThrow(new InvalidFrequencyException("Invalid frequency"));
-                dosageMapper.mapCreateDosagePMToEntity(createDosagePM);
+                dosageMapper.mapPMToEntity(baseDosagePM);
             });
         }
     }
@@ -144,27 +151,21 @@ public class DosageMapperTest {
     class NullHandlingTests {
 
         @Test
-        @DisplayName("mapEntityToDosagePM should return null for a null Dosage entity")
-        void mapEntityToDosagePM_shouldReturnNull_forNullInput() {
-            assertThat(dosageMapper.mapEntityToDosagePM(null)).isNull();
+        @DisplayName("mapEntityToPM should return null for a null Dosage entity")
+        void mapEntityToPM_shouldReturnNull_forNullInput() {
+            assertThat(dosageMapper.mapEntityToPM(null)).isNull();
         }
 
         @Test
-        @DisplayName("mapEntityToCreateDosagePM should return null for a null Dosage entity")
-        void mapEntityToCreateDosagePM_shouldReturnNull_forNullInput() {
-            assertThat(dosageMapper.mapEntityToCreateDosagePM(null)).isNull();
+        @DisplayName("mapEntityToCreatePM should return null for a null Dosage entity")
+        void mapEntityToCreatePM_shouldReturnNull_forNullInput() {
+            assertThat(dosageMapper.mapEntityToCreatePM(null)).isNull();
         }
 
         @Test
-        @DisplayName("mapCreateDosagePMToEntity should return null for a null CreateDosagePM")
-        void mapCreateDosagePMToEntity_shouldReturnNull_forNullInput() throws InvalidFrequencyException {
-            assertThat(dosageMapper.mapCreateDosagePMToEntity(null)).isNull();
-        }
-
-        @Test
-        @DisplayName("mapDosagePMToEntity should return null for a null DosagePresentationModel")
-        void mapDosagePMToEntity_shouldReturnNull_forNullInput() throws InvalidFrequencyException {
-            assertThat(dosageMapper.mapDosagePMToEntity(null)).isNull();
+        @DisplayName("mapPMToEntity should return null for a null BaseDosagePM")
+        void mapPMToEntity_shouldReturnNull_forNullInput() throws InvalidFrequencyException {
+            assertThat(dosageMapper.mapPMToEntity(null)).isNull();
         }
     }
 }

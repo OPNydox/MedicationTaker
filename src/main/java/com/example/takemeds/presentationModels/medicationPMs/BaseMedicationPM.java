@@ -8,10 +8,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseMedicationPM {
@@ -24,6 +25,4 @@ public class BaseMedicationPM {
     //TO DO make field more complex Structure the data into separate fields (e.g., "Uses," "Side Effects," "Dosage") instead of one long string.
     @Size(max = 500, message = "Medication description cannot exceed 500 symbols")
     private String description;
-
-    private DosagePresentationModel defaultDosage;
 }

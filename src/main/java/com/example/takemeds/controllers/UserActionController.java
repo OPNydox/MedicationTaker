@@ -1,7 +1,7 @@
 package com.example.takemeds.controllers;
 
 import com.example.takemeds.presentationModels.MedLogPresentationModel;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import com.example.takemeds.services.MedicationLogService;
 import com.example.takemeds.services.MedicationService;
 import com.example.takemeds.services.UserService;
@@ -42,26 +42,26 @@ public class UserActionController {
     }
 
     @PostMapping("/assign/medication/{id}")
-    public ResponseEntity<MedicationPresentationModel> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        MedicationPresentationModel medication = medicationService.selfAssignMedication(userDetails, id);
+    public ResponseEntity<MedicationDosagePM> assignMedication(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        MedicationDosagePM medication = medicationService.selfAssignMedication(userDetails, id);
         return new ResponseEntity<>(medication, HttpStatus.OK);
     }
 
     @PostMapping("/show/my/medication/")
-    public ResponseEntity<List<MedicationPresentationModel>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationPresentationModel> medications = userService.showMedicationForUser(userDetails.getUsername());
+    public ResponseEntity<List<MedicationDosagePM>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationDosagePM> medications = userService.showMedicationForUser(userDetails.getUsername());
         return new ResponseEntity<>(medications, HttpStatus.OK);
     }
 
     @PutMapping("/edit/my/medication")
-    public ResponseEntity<MedicationPresentationModel> editMyMedication(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MedicationPresentationModel medication) {
-        MedicationPresentationModel result = medicationService.editMedication(userDetails, medication);
+    public ResponseEntity<MedicationDosagePM> editMyMedication(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MedicationDosagePM medication) {
+        MedicationDosagePM result = medicationService.editMedication(userDetails, medication);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/show/my/medication")
-    public ResponseEntity<List<MedicationPresentationModel>> showMyMedications(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationPresentationModel> result = medicationService.findMedicationsForUser(userDetails);
+    public ResponseEntity<List<MedicationDosagePM>> showMyMedications(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationDosagePM> result = medicationService.findMedicationsForUser(userDetails);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

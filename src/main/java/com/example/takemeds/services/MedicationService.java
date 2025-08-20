@@ -4,7 +4,9 @@ import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosageRefPM;
 import com.example.takemeds.repositories.MedicationRepository;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
@@ -37,18 +39,50 @@ public class MedicationService {
     }
 
     @Transactional
-    public MedicationPresentationModel createMedication(MedicationPresentationModel medicationPM) throws InvalidFrequencyException {
+    public MedicationDosagePM createMedication(MedicationDosageRefPM medicationDosageRefPM) {
+        Medication createdMedication = medicationMapper.presentationModelToEntity(medicationDosageRefPM);
+        Dosage dosage = dosageService.findDosageEntity(medicationDosageRefPM.getDosageId());
+
+        createdMedication.setDosage(dosage);
+        dosage.setMedication(createdMedication);
+
+        dosageService.saveDosage(dosage);
+
+        MedicationDosagePM resultMedication = medicationMapper.mapEntityToPM(medicationRepository.save(createdMedication));
+
+        resultMedication.setDefaultDosagePM(dosageMapper.mapEntityToPM(dosage));
+
+        return resultMedication;
+    }
+
+    @Transactional
+    public MedicationDosagePM createMedication(MedicationDosagePM medicationPM) throws InvalidFrequencyException {
         Medication createdMedication = medicationMapper.presentationModelToEntity(medicationPM);
-        Dosage dosage;
-        if (medicationPM.getDefaultDosage() != null) {
-            try {
-                dosage =  dosageMapper.mapDosagePMToEntity(dosageService.findDosage(createdMedication.getDosage().getId()));
-            } catch (EntityNotFoundException ex) {
-                dosage = dosageMapper.mapDosagePMToEntity(dosageService.createAndMapDosage(medicationPM.getDefaultDosage()));
-            }
-            createdMedication.setDosage(dosage);
-        }
-        return medicationMapper.mapEntityToPM(medicationRepository.save(createdMedication));
+        Dosage dosage = dosageService.createDosageEntity(medicationPM.getDefaultDosagePM());
+
+        dosage.setMedication(createdMedication);
+        createdMedication.setDosage(dosage);
+
+        medicationRepository.save(createdMedication);
+        dosageService.saveDosage(dosage);
+
+        MedicationDosagePM resultMedication = medicationMapper.mapEntityToPM(medicationRepository.save(createdMedication));
+
+        resultMedication.setDefaultDosagePM(dosageMapper.mapEntityToPM(dosage));
+
+        return resultMedication;
+    }
+
+    @Transactional
+    public MedicationDosagePM createMedication(BaseMedicationPM medicationPM) {
+        return medicationMapper.mapEntityToPM(createMedicationEntity(medicationPM));
+    }
+
+    @Transactional
+    private Medication createMedicationEntity(BaseMedicationPM medicationPM) {
+        Medication createdMedication = medicationMapper.presentationModelToEntity(medicationPM);
+
+        return medicationRepository.save(createdMedication);
     }
 
     public Medication findMedication(long id) {
@@ -61,7 +95,7 @@ public class MedicationService {
         return medication.get();
     }
 
-    public MedicationPresentationModel selfAssignMedication(UserDetails userDetails, Long medId) {
+    public MedicationDosagePM selfAssignMedication(UserDetails userDetails, Long medId) {
         User user = userService.getUser(userDetails.getUsername());
         Medication medication = findMedication(medId);
 
@@ -76,7 +110,7 @@ public class MedicationService {
         return medicationRepository.save(medication);
     }
 
-    public MedicationPresentationModel editMedication(UserDetails userDetails, MedicationPresentationModel medicationUpdate) {
+    public MedicationDosagePM editMedication(UserDetails userDetails, MedicationDosagePM medicationUpdate) {
         User user = userService.getUser(userDetails.getUsername());
         Medication medication = user.getMedicationToTake().stream()
                 .filter(entity -> entity.getId() == medicationUpdate.getId()).findFirst()
@@ -89,7 +123,7 @@ public class MedicationService {
         return medicationMapper.mapEntityToPM(medication);
     }
 
-    public List<MedicationPresentationModel> findMedicationsForUser(UserDetails userDetails) {
+    public List<MedicationDosagePM> findMedicationsForUser(UserDetails userDetails) {
         User user = userService.getUser(userDetails.getUsername());
         return medicationMapper.mapMedicationsToPM(user.getMedicationToTake());
     }

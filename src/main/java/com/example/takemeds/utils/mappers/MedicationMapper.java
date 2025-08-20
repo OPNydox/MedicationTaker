@@ -1,7 +1,8 @@
 package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.Medication;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,18 +13,18 @@ public class MedicationMapper {
     public MedicationMapper() {
     }
 
-    public MedicationPresentationModel mapEntityToPM(Medication medication) {
+    public MedicationDosagePM mapEntityToPM(Medication medication) {
         if (medication == null) {
             return null;
         }
 
-        return MedicationPresentationModel.builder().id(medication.getId())
-                                                    .name(medication.getName())
-                                                    .description(medication.getDescription()).build();
+        return MedicationDosagePM.builder().id(medication.getId())
+                                                         .name(medication.getName())
+                                                         .description(medication.getDescription()).build();
     }
 
-    public List<MedicationPresentationModel> mapMedicationsToPM(List<Medication> input) {
-        List<MedicationPresentationModel> result = new ArrayList<>();
+    public List<MedicationDosagePM> mapMedicationsToPM(List<Medication> input) {
+        List<MedicationDosagePM> result = new ArrayList<>();
 
         for (Medication medication : input) {
             result.add(mapEntityToPM(medication));
@@ -32,7 +33,7 @@ public class MedicationMapper {
         return result;
     }
 
-    public Medication presentationModelToEntity(MedicationPresentationModel medicationPM)  {
+    public Medication presentationModelToEntity(BaseMedicationPM medicationPM)  {
         if (medicationPM == null) {
             return null;
         }
