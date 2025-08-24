@@ -1,6 +1,7 @@
 package com.example.takemeds.controllers.exceptionHandlers;
 
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -89,6 +90,16 @@ public class GlobalExceptionHandler {
         error.setTimestamp(System.currentTimeMillis());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(ex.getMessage());
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
+        error.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     //TO DO handle TransientPropertyValueException

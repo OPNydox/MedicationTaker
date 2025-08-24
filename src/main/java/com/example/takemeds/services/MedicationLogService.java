@@ -29,13 +29,8 @@ public class MedicationLogService {
     }
 
     public MedLogPresentationModel takeMedication(String username, Long medicationId) {
-        Medication medication = medicationService.findMedication(medicationId);
-        User user = userService.getUser(username);
-
-        MedicationTakenLog medicationTakenLog = createMedicationLog(user, medication);
-        medicationTakenLog = medicationTakenLogRepository.save(medicationTakenLog);
-
-        return medTakenMapper.entityToPM(medicationTakenLog);
+        //TO DO
+        throw new RuntimeException("Method is not implemented");
     }
 
     private MedicationTakenLog createMedicationLog(User user, Medication medication) {

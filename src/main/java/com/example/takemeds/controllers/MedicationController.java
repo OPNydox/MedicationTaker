@@ -22,21 +22,4 @@ public class MedicationController {
         this.medicationService = medicationService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<MedicationDosagePM> createMedication(@RequestBody @Valid BaseMedicationPM medicationPM) {
-       MedicationDosagePM createdMedication = medicationService.createMedication(medicationPM);
-       return new ResponseEntity<>(createdMedication, HttpStatus.OK);
-    }
-
-    @PostMapping("/create/with-dosage")
-    public ResponseEntity<MedicationDosagePM> createMedicationWithDosage(@RequestBody @Valid MedicationDosagePM medication) throws InvalidFrequencyException {
-        MedicationDosagePM createdMedication = medicationService.createMedication(medication);
-        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
-    }
-
-    @PostMapping("/create/with-dosage-reference")
-    public ResponseEntity<MedicationDosagePM> createMedicationWithDosageRef(@RequestBody @Valid MedicationDosageRefPM medication) throws InvalidFrequencyException {
-        MedicationDosagePM createdMedication = medicationService.createMedication(medication);
-        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
-    }
 }

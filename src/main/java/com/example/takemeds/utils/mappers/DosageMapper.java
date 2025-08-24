@@ -29,6 +29,18 @@ public class DosageMapper {
                 .build();
     }
 
+    public BaseDosagePM mapBaseEntityToPM(Dosage dosage) {
+        if (dosage == null) {
+            return null;
+        }
+
+        return BaseDosagePM.builder()
+                .frequency(dosage.getFrequency().toString())
+                .timesPerDay(dosage.getTimesPerDay())
+                .timesToTake(dosage.getTimesToTake())
+                .build();
+    }
+
     public CreateDosagePM mapEntityToCreatePM(Dosage dosage) {
         if (dosage == null) {
             return null;

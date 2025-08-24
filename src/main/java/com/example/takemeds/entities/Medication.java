@@ -54,6 +54,6 @@ public class Medication {
     @OneToOne(mappedBy = "medication")
     private Dosage dosage;
 
-    @ManyToMany(mappedBy = "medicationToTake")
+    @ManyToMany(mappedBy = "medications")
     private List<User> users;
 }

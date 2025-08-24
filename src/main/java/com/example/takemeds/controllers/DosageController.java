@@ -37,12 +37,14 @@ public class DosageController {
 
     @PostMapping("/createWithMedication")
     public ResponseEntity<DosagePresentationModel> createDosageWithMedication(@RequestBody @Valid CreateDosagePM dosagePM) throws InvalidDosageException, InvalidFrequencyException {
-        Dosage createdDosage = dosageService.createDosageEntity(dosagePM);
+        //Dosage createdDosage = dosageService.createDosageEntity(dosagePM);
+//
+        //medicationService.addDefaultDosageToMedication(createdDosage, dosagePM.getMedicationId());
+//
+        //DosagePresentationModel resultDosage = dosageService.findDosage(createdDosage.getId());
+//
+        //return new ResponseEntity<>(resultDosage, HttpStatus.OK);
 
-        medicationService.addDefaultDosageToMedication(createdDosage, dosagePM.getMedicationId());
-
-        DosagePresentationModel resultDosage = dosageService.findDosage(createdDosage.getId());
-
-        return new ResponseEntity<>(resultDosage, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 }

@@ -91,7 +91,7 @@ public class MedicationMapperTest {
 
     @Test
     @DisplayName("Should correctly map a MedicationPresentationModel to a Medication entity")
-    void presentationModelToEntity_validInput_shouldMapCorrectly() {
+    void mapPMToEntity_validInput_shouldMapCorrectly() {
         // Given
         BaseMedicationPM presentationModel = BaseMedicationPM.builder()
                 .id(1L)
@@ -111,12 +111,12 @@ public class MedicationMapperTest {
 
     @Test
     @DisplayName("Should return null when mapping a null MedicationPresentationModel to an entity")
-    void presentationModelToEntity_nullInput_shouldReturnNull() {
+    void mapPMToEntity_nullInput_shouldReturnNull() {
         // Given
         MedicationDosagePM presentationModel = null;
 
         // When
-        Medication entity = medicationMapper.presentationModelToEntity(presentationModel);
+        Medication entity = medicationMapper.mapPMToEntity(presentationModel);
 
         // Then
         assertNull(entity);

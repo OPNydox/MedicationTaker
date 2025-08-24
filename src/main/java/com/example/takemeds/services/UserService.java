@@ -89,10 +89,5 @@ public class UserService implements UserDetailsService {
         return repository.save(user);
     }
 
-    public List<MedicationDosagePM> showMedicationForUser(String username) {
-        User user = getUser(username);
-        List<Medication> medications = user.getMedicationToTake();
 
-        return medicationMapper.mapMedicationsToPM(medications);
-    }
 }

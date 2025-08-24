@@ -33,7 +33,7 @@ public class MedicationMapper {
         return result;
     }
 
-    public Medication presentationModelToEntity(BaseMedicationPM medicationPM)  {
+    public Medication mapPMToEntity(BaseMedicationPM medicationPM)  {
         if (medicationPM == null) {
             return null;
         }
