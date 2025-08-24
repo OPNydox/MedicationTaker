@@ -5,6 +5,8 @@ import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
+import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
+import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
@@ -99,24 +101,6 @@ public class UserActionService {
     }
 
     @Transactional
-    public MedicationDosagePM createMedicationWithDosageRef(MedicationDosageRefPM medicationPM, UserDetails userDetails) {
-        User user = userService.getUser(userDetails.getUsername());
-
-        Medication medication = medicationService.createMedicationEntity(medicationPM);
-        Dosage dosage = dosageService.findDosageEntity(medicationPM.getDosageId());
-
-        medication.setDosage(dosage);
-        dosage.setMedication(medication);
-
-        user.getMedications().add(medication);
-
-        MedicationDosagePM result = medicationMapper.mapEntityToPM(medication);
-        result.setDefaultDosagePM(dosageMapper.mapBaseEntityToPM(dosage));
-
-        return result;
-    }
-
-    @Transactional
     public void deleteMedication(Long id, UserDetails userDetails) {
         User user = userService.getUser(userDetails.getUsername());
 
@@ -125,6 +109,20 @@ public class UserActionService {
         user.getMedications().remove(medicationToDelete);
 
         medicationService.deleteMedication(id);
+    }
+
+    @Transactional
+    public MedicationDosagePM setDefaultDosage(CreateDosagePM dosagePM, UserDetails userDetails) throws InvalidFrequencyException {
+        User user = userService.getUser(userDetails.getUsername());
+        Dosage createdDosage = dosageService.createDosageEntity(dosagePM);
+        Medication medication = findUserMedication(dosagePM.getMedicationId(), user);
+
+        medication.setDosage(createdDosage);
+
+        MedicationDosagePM result = medicationMapper.mapEntityToPM(medication);
+        result.setDefaultDosagePM(dosageMapper.mapBaseEntityToPM(createdDosage));
+
+        return result;
     }
 
     private Medication findUserMedication(Long medicationId, User user) {

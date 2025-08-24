@@ -1,8 +1,11 @@
 package com.example.takemeds.controllers;
 
+import com.example.takemeds.exceptions.InvalidDosageException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import com.example.takemeds.presentationModels.MedLogPresentationModel;
+import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
+import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosageRefPM;
@@ -87,17 +90,17 @@ public class UserActionController {
         return new ResponseEntity<>(createdMedication, HttpStatus.OK);
     }
 
-    @PostMapping("/create/with-dosage-ref")
-    public ResponseEntity<MedicationDosagePM> createMedicationWithDosageRef(@RequestBody @Valid MedicationDosageRefPM medication, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
-        MedicationDosagePM createdMedication = userActionService.createMedicationWithDosageRef(medication, userDetails);
-        return new ResponseEntity<>(createdMedication, HttpStatus.OK);
-    }
-
     @DeleteMapping("/delete/medication/{id}")
     public ResponseEntity<Void> deleteMedication(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         userActionService.deleteMedication(id, userDetails);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/set-default-dosage")
+    public ResponseEntity<MedicationDosagePM> createDosage(@RequestBody @Valid CreateDosagePM dosagePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidDosageException, InvalidFrequencyException {
+        MedicationDosagePM updatedMedication = userActionService.setDefaultDosage(dosagePM, userDetails);
+        return new ResponseEntity<>(updatedMedication, HttpStatus.OK);
     }
 
 }

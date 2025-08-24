@@ -51,6 +51,7 @@ public class MedicationService {
         return medication.get();
     }
 
+    @Transactional
     protected void deleteMedication(Long medicationId) {
         Medication medicationToDelete = findMedication(medicationId);
         medicationRepository.delete(medicationToDelete);
