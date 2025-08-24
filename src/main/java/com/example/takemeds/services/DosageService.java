@@ -48,10 +48,4 @@ public class DosageService {
         }
         return foundDosage.get();
     }
-
-
-
-    protected Dosage saveDosage(Dosage dosage) {
-        return dosageRepository.save(dosage);
-    }
 }
