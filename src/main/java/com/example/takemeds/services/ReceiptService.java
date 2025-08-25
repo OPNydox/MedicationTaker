@@ -4,7 +4,7 @@ import com.example.takemeds.entities.Receipt;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
-import com.example.takemeds.presentationModels.UserMedicationPresentationModel;
+import com.example.takemeds.presentationModels.UserMedicationPM;
 import com.example.takemeds.repositories.ReceiptRepository;
 import com.example.takemeds.utils.mappers.ReceiptMapper;
 import com.example.takemeds.utils.mappers.UserMedicationMapper;
@@ -79,7 +79,7 @@ public class ReceiptService {
      * @throws IllegalArgumentException If the receipt with the given ID is not found.
      */
     @Transactional
-    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, UserMedicationPresentationModel userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
+    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, UserMedicationPM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
         Receipt receipt = receiptRepository.findById(receiptId)
                 .orElseThrow(() -> new IllegalArgumentException("Receipt with ID " + receiptId + " not found."));
 

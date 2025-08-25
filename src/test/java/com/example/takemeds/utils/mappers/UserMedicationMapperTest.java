@@ -2,7 +2,7 @@ package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.User;
 import com.example.takemeds.entities.UserMedication;
-import com.example.takemeds.presentationModels.UserMedicationPresentationModel;
+import com.example.takemeds.presentationModels.UserMedicationPM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class UserMedicationMapperTest {
 
     @Test
     @DisplayName("Should correctly map a UserMedication entity to a UserMedicationPresentationModel")
-    void toUserMedicationPresentationModel_validInput_shouldMapCorrectly() {
+    void toUserMedicationPM_validInput_shouldMapCorrectly() {
         // Given
         User user = new User();
         user.setId(1L);
@@ -35,7 +35,7 @@ public class UserMedicationMapperTest {
                 .build();
 
         // When
-        UserMedicationPresentationModel presentationModel = userMedicationMapper.toUserMedicationPresentationModel(userMedication);
+        UserMedicationPM presentationModel = userMedicationMapper.toUserMedicationPM(userMedication);
 
         // Then
         assertNotNull(presentationModel);
@@ -45,12 +45,12 @@ public class UserMedicationMapperTest {
 
     @Test
     @DisplayName("Should return null when mapping a null UserMedication entity to a PM")
-    void toUserMedicationPresentationModel_nullInput_shouldReturnNull() {
+    void toUserMedicationPM_nullInput_shouldReturnNull() {
         // Given
         UserMedication userMedication = null;
 
         // When
-        UserMedicationPresentationModel presentationModel = userMedicationMapper.toUserMedicationPresentationModel(userMedication);
+        UserMedicationPM presentationModel = userMedicationMapper.toUserMedicationPM(userMedication);
 
         // Then
         assertNull(presentationModel);
@@ -60,7 +60,7 @@ public class UserMedicationMapperTest {
     @DisplayName("Should correctly map a UserMedicationPresentationModel to a UserMedication entity")
     void toUserMedicationEntity_validInput_shouldMapCorrectly() {
         // Given
-        UserMedicationPresentationModel userMedicationPM = UserMedicationPresentationModel.builder()
+        UserMedicationPM userMedicationPM = UserMedicationPM.builder()
                 .id(1L)
                 .receiptId(10L)
                 .build();
@@ -77,7 +77,7 @@ public class UserMedicationMapperTest {
     @DisplayName("Should return null when mapping a null UserMedicationPresentationModel to an entity")
     void toUserMedicationEntity_nullInput_shouldReturnNull() {
         // Given
-        UserMedicationPresentationModel userMedicationPM = null;
+        UserMedicationPM userMedicationPM = null;
 
         // When
         UserMedication entity = userMedicationMapper.toUserMedicationEntity(userMedicationPM);
@@ -90,9 +90,9 @@ public class UserMedicationMapperTest {
     @DisplayName("Should correctly map a list of UserMedicationPresentationModels to a list of UserMedication entities")
     void toUserMedicationEntities_validList_shouldMapCorrectly() {
         // Given
-        UserMedicationPresentationModel userMedicationPM1 = UserMedicationPresentationModel.builder().id(1L).receiptId(10L).build();
-        UserMedicationPresentationModel userMedicationPM2 = UserMedicationPresentationModel.builder().id(2L).receiptId(11L).build();
-        List<UserMedicationPresentationModel> presentationModels = new ArrayList<>();
+        UserMedicationPM userMedicationPM1 = UserMedicationPM.builder().id(1L).receiptId(10L).build();
+        UserMedicationPM userMedicationPM2 = UserMedicationPM.builder().id(2L).receiptId(11L).build();
+        List<UserMedicationPM> presentationModels = new ArrayList<>();
         presentationModels.add(userMedicationPM1);
         presentationModels.add(userMedicationPM2);
 
@@ -110,7 +110,7 @@ public class UserMedicationMapperTest {
     @DisplayName("Should return an empty list when mapping an empty list of PMs to entities")
     void toUserMedicationEntities_emptyList_shouldReturnEmptyList() {
         // Given
-        List<UserMedicationPresentationModel> emptyList = Collections.emptyList();
+        List<UserMedicationPM> emptyList = Collections.emptyList();
 
         // When
         List<UserMedication> resultList = userMedicationMapper.toUserMedicationEntities(emptyList);

@@ -14,6 +14,6 @@ public class ReceiptPresentationModel {
     private Long id;
     private LocalDateTime receiptTime;
     private String description;
-    private List<UserMedicationPresentationModel> userMedications; // Changed to a list of presentation models
+    private List<UserMedicationPM> userMedications; // Changed to a list of presentation models
     private boolean isFinalized;
 }
