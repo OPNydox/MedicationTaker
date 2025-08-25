@@ -12,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,13 +28,15 @@ public class UserMedicationService {
     }
 
     @Transactional
-    protected UserMedicationPM createEntity(Medication medication, Dosage dosage, User user, Receipt receipt) {
+    protected UserMedicationPM createEntity(Medication medication, Dosage dosage, User user, Receipt receipt, LocalDate endDate) {
         UserMedication userMedication = UserMedication.builder().build();
 
         userMedication.setMedication(medication);
         userMedication.setDosage(dosage);
         userMedication.setUser(user);
         userMedication.setReceipt(receipt);
+        userMedication.setEndDate(endDate);
+        userMedication.setFinished(false);
 
         userMedicationRepository.save(userMedication);
 
@@ -56,6 +60,10 @@ public class UserMedicationService {
 
         return userMedicationMapper.toUserMedicationPM(userMedication);
 
+    }
+
+    protected List<UserMedication> findNonFinishedUserMedicationBy(Long userId) {
+        return userMedicationRepository.findByUser_IdAndIsFinishedFalse(userId);
     }
 
     private UserMedication findUserMedicationById(Long id) {

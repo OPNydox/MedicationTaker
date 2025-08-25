@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -16,7 +18,7 @@ public class UserMedicationPM {
     private Long userID;
     private BaseMedicationPM medication;
     private DosagePresentationModel dosage;
-
-
     private Long receiptId;
+    private LocalDate endDate;
+    private boolean isFinished;
 }
