@@ -3,7 +3,7 @@ package com.example.takemeds.controllers;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
-import com.example.takemeds.presentationModels.UserMedicationPM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.services.ReceiptService;
 
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class ReceiptController {
 
     @PostMapping("/add/med/{id}")
     public ResponseEntity<ReceiptPresentationModel> addMedicineToReceipt(@PathVariable Long id,
-                                                                         @RequestBody @Valid UserMedicationPM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
+                                                                         @RequestBody @Valid MedicationSchedulePM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
         ReceiptPresentationModel editedReceipt = receiptService.addUserMedicationToReceipt(id, userMedication);
 
         return new ResponseEntity<>(editedReceipt, HttpStatus.OK);

@@ -4,10 +4,10 @@ import com.example.takemeds.entities.Receipt;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
-import com.example.takemeds.presentationModels.UserMedicationPM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.repositories.ReceiptRepository;
 import com.example.takemeds.utils.mappers.ReceiptMapper;
-import com.example.takemeds.utils.mappers.UserMedicationMapper;
+import com.example.takemeds.utils.mappers.MedicationScheduleMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +22,12 @@ public class ReceiptService {
 
     private final ReceiptMapper receiptMapper;
 
-    private final UserMedicationMapper userMedicationMapper;
+    private final MedicationScheduleMapper medicationScheduleMapper;
 
-    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, UserMedicationMapper userMedicationMapper) {
+    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, MedicationScheduleMapper medicationScheduleMapper) {
         this.receiptRepository = receiptRepository;
         this.receiptMapper = receiptMapper;
-        this.userMedicationMapper = userMedicationMapper;
+        this.medicationScheduleMapper = medicationScheduleMapper;
     }
 
     /**
@@ -79,11 +79,11 @@ public class ReceiptService {
      * @throws IllegalArgumentException If the receipt with the given ID is not found.
      */
     @Transactional
-    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, UserMedicationPM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
+    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, MedicationSchedulePM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
         Receipt receipt = receiptRepository.findById(receiptId)
                 .orElseThrow(() -> new IllegalArgumentException("Receipt with ID " + receiptId + " not found."));
 
-        receipt.AddUserMedication(userMedicationMapper.toUserMedicationEntity(userMedication));
+        receipt.AddUserMedication(medicationScheduleMapper.toUserMedicationEntity(userMedication));
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 

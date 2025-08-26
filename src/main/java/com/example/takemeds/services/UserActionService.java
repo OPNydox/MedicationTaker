@@ -4,13 +4,13 @@ import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.exceptions.UnauthorizedAccessException;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationDosageRefPM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,11 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
-import java.awt.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserActionService {
@@ -129,6 +126,13 @@ public class UserActionService {
         return user.getMedications().stream()
                 .filter(entity -> Objects.equals(entity.getId(), medicationId)).findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationId + "does not exist or is not assigned."));
+    }
+
+    private MedicationSchedulePM createMedicationSchedule(MedicationScheduleWithIdsPM medicationScheduleWithIdsPM, UserDetails userDetails) throws InvalidFrequencyException {
+        User user = userService.getUser(userDetails.getUsername());
+        Medication medication = medicationService.findMedication(medicationScheduleWithIdsPM.getMedicationId());
+
+        return null;
     }
 }
 

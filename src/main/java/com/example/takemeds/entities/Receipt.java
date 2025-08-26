@@ -43,16 +43,16 @@ public class Receipt {
                 cascade = CascadeType.ALL,
                 orphanRemoval = true,
                 fetch = FetchType.LAZY)
-    private List<UserMedication> userMedications = new ArrayList<>();
+    private List<MedicationSchedule> medicationSchedules = new ArrayList<>();
 
     @Column
     boolean isFinalized;
 
-    public void AddUserMedication(UserMedication userMedication) throws FinalizedReceiptException {
+    public void AddUserMedication(MedicationSchedule medicationSchedule) throws FinalizedReceiptException {
         if (isFinalized) {
             throw new FinalizedReceiptException("Cannot add medication to finalized receipt.");
         }
 
-        this.userMedications.add(userMedication);
+        this.medicationSchedules.add(medicationSchedule);
     }
 }

@@ -2,17 +2,13 @@ package com.example.takemeds.controllers;
 
 import com.example.takemeds.exceptions.InvalidDosageException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
-import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import com.example.takemeds.presentationModels.MedLogPresentationModel;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
-import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationDosageRefPM;
 import com.example.takemeds.services.MedicationLogService;
-import com.example.takemeds.services.MedicationService;
 import com.example.takemeds.services.UserActionService;
-import com.example.takemeds.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,15 +33,9 @@ public class UserActionController {
 
     private final UserActionService userActionService;
 
-    private final MedicationService medicationService;
-
-    private final UserService userService;
-
-    public UserActionController(MedicationLogService medicationLogService, UserActionService userActionService, MedicationService medicationService, UserService userService) {
+    public UserActionController(MedicationLogService medicationLogService, UserActionService userActionService) {
         this.medicationLogService = medicationLogService;
         this.userActionService = userActionService;
-        this.medicationService = medicationService;
-        this.userService = userService;
     }
 
     @PostMapping("/take/{id}")
@@ -101,6 +91,11 @@ public class UserActionController {
     public ResponseEntity<MedicationDosagePM> createDosage(@RequestBody @Valid CreateDosagePM dosagePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidDosageException, InvalidFrequencyException {
         MedicationDosagePM updatedMedication = userActionService.setDefaultDosage(dosagePM, userDetails);
         return new ResponseEntity<>(updatedMedication, HttpStatus.OK);
+    }
+
+    @PostMapping("/create/medication-schedule")
+    public ResponseEntity<MedicationSchedulePM> createMedicationSchedule(@RequestBody @Valid MedicationSchedulePM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) {
+        return null;
     }
 
 }
