@@ -2,11 +2,14 @@ package com.example.takemeds.controllers;
 
 import com.example.takemeds.exceptions.InvalidDosageException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import com.example.takemeds.presentationModels.MedLogPresentationModel;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
 import com.example.takemeds.services.MedicationLogService;
 import com.example.takemeds.services.UserActionService;
 import jakarta.validation.Valid;
@@ -94,8 +97,21 @@ public class UserActionController {
     }
 
     @PostMapping("/create/medication-schedule")
-    public ResponseEntity<MedicationSchedulePM> createMedicationSchedule(@RequestBody @Valid MedicationSchedulePM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) {
-        return null;
+    public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid MedicationScheduleWithIdsPM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
+        MedicationScheduleView scheduleView = userActionService.createMedicationSchedule(medicationSchedulePM, userDetails);
+        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create/medication-schedule-medication")
+    public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid MedicationSchedulePM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
+        MedicationScheduleView scheduleView = userActionService.createMedicationSchedule(medicationSchedulePM, userDetails);
+        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/medication-schedule/{id}")
+    public ResponseEntity<MedicationScheduleView> deleteMedicationSchedule(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException, UnauthorizedAccessException {
+        userActionService.deleteMedicationSchedule(id, userDetails);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
 }

@@ -83,7 +83,7 @@ public class ReceiptService {
         Receipt receipt = receiptRepository.findById(receiptId)
                 .orElseThrow(() -> new IllegalArgumentException("Receipt with ID " + receiptId + " not found."));
 
-        receipt.AddUserMedication(medicationScheduleMapper.toUserMedicationEntity(userMedication));
+        //receipt.AddUserMedication(medicationScheduleMapper.toUserMedicationEntity(userMedication));
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 

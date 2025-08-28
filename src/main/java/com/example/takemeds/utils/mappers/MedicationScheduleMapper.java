@@ -36,7 +36,6 @@ public class MedicationScheduleMapper {
         }
 
         return MedicationScheduleWithIdsPM.builder()
-                .id(entity.getId())
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .medicationId(entity.getMedication().getId())
@@ -57,7 +56,6 @@ public class MedicationScheduleMapper {
         BaseMedicationPM medicationPM = medicationMapper.mapEntityToPM(entity.getMedication());
 
         return MedicationSchedulePM.builder()
-                .id(entity.getId())
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .userID(entity.getUser().getId())
@@ -80,7 +78,7 @@ public class MedicationScheduleMapper {
 
 
         return MedicationScheduleView.builder()
-                .id(medicationSchedulePM.getId())
+                .id(entity.getId())
                 .startDate(medicationSchedulePM.getStartDate())
                 .endDate(medicationSchedulePM.getEndDate())
                 .userID(medicationSchedulePM.getUserID())
@@ -116,7 +114,6 @@ public class MedicationScheduleMapper {
             return null;
         }
         return MedicationSchedule.builder()
-                .id(pm.getId())
                 .startDate(pm.getStartDate())
                 .endDate(pm.getEndDate())
                 .build();

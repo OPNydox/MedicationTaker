@@ -1,4 +1,4 @@
-package com.example.takemeds.services.medicationScheduleServices;
+package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;

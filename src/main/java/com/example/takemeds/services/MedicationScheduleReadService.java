@@ -1,8 +1,7 @@
-package com.example.takemeds.services.medicationScheduleServices;
+package com.example.takemeds.services;
 
 import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.repositories.MedicationScheduleRepository;
-import com.example.takemeds.utils.mappers.MedicationScheduleMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 

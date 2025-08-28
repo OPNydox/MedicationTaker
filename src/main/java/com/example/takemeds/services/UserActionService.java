@@ -2,14 +2,16 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
+import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
-import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
 import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
@@ -33,12 +35,18 @@ public class UserActionService {
 
     private final DosageMapper dosageMapper;
 
-    public UserActionService(UserService userService, MedicationService medicationService, MedicationMapper medicationMapper, DosageService dosageService, DosageMapper dosageMapper) {
+    private final MedicationScheduleManagementService medicationScheduleManagementService;
+
+    private final MedicationScheduleReadService medicationScheduleReadService;
+
+    public UserActionService(UserService userService, MedicationService medicationService, MedicationMapper medicationMapper, DosageService dosageService, DosageMapper dosageMapper, MedicationScheduleManagementService medicationScheduleManagementService, MedicationScheduleReadService medicationScheduleReadService) {
         this.userService = userService;
         this.medicationService = medicationService;
         this.medicationMapper = medicationMapper;
         this.dosageService = dosageService;
         this.dosageMapper = dosageMapper;
+        this.medicationScheduleManagementService = medicationScheduleManagementService;
+        this.medicationScheduleReadService = medicationScheduleReadService;
     }
 
     @Transactional
@@ -128,11 +136,33 @@ public class UserActionService {
                 .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationId + "does not exist or is not assigned."));
     }
 
-    private MedicationSchedulePM createMedicationSchedule(MedicationScheduleWithIdsPM medicationScheduleWithIdsPM, UserDetails userDetails) throws InvalidFrequencyException {
+    public MedicationScheduleView createMedicationSchedule(MedicationScheduleWithIdsPM medicationScheduleWithIdsPM, UserDetails userDetails) throws InvalidFrequencyException {
         User user = userService.getUser(userDetails.getUsername());
         Medication medication = medicationService.findMedication(medicationScheduleWithIdsPM.getMedicationId());
+        Dosage dosage = dosageService.createDosageEntity(medicationScheduleWithIdsPM.getDosage());
 
-        return null;
+        MedicationScheduleView result = medicationScheduleManagementService.createEntity(medication, dosage, user, medicationScheduleWithIdsPM);
+
+        return result;
+    }
+
+    public MedicationScheduleView createMedicationSchedule(MedicationSchedulePM medicationSchedulePM, UserDetails userDetails) throws InvalidFrequencyException {
+        User user = userService.getUser(userDetails.getUsername());
+        Medication medication = medicationService.createMedicationEntity(medicationSchedulePM.getMedication());
+        Dosage dosage = dosageService.createDosageEntity(medicationSchedulePM.getDosage());
+
+        return medicationScheduleManagementService.createEntity(medication, dosage, user, medicationSchedulePM);
+    }
+
+    public void deleteMedicationSchedule(Long scheduleId, UserDetails userDetails) throws InvalidFrequencyException, UnauthorizedAccessException {
+        User user = userService.getUser(userDetails.getUsername());
+        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
+
+        if (schedule.getUser().getId() != user.getId()) {
+            throw new UnauthorizedAccessException("You are not allowed to delete this resource.");
+        }
+
+        medicationScheduleManagementService.deleteMedicationSchedule(scheduleId);
     }
 }
 
