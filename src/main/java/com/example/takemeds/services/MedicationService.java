@@ -58,7 +58,7 @@ public class MedicationService {
     }
 
     @Transactional
-    public MedicationDosagePM editMedication(Medication oldMedication, MedicationDosagePM medicationUpdate) {
+    public MedicationDosagePM editMedication(Medication oldMedication, BaseMedicationPM medicationUpdate) {
         oldMedication.setName(medicationUpdate.getName());
         oldMedication.setDescription(medicationUpdate.getDescription());
 

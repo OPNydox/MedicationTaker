@@ -6,6 +6,8 @@ import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
+import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.BaseMedicationSchedulePM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.dosagePMs.DosagePresentationModel;
@@ -15,11 +17,13 @@ import com.example.takemeds.presentationModels.medicationSchedulesPMs.Medication
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
 import com.example.takemeds.utils.mappers.DosageMapper;
 import com.example.takemeds.utils.mappers.MedicationMapper;
+import com.example.takemeds.utils.mappers.MedicationScheduleMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +43,9 @@ public class UserActionService {
 
     private final MedicationScheduleReadService medicationScheduleReadService;
 
-    public UserActionService(UserService userService, MedicationService medicationService, MedicationMapper medicationMapper, DosageService dosageService, DosageMapper dosageMapper, MedicationScheduleManagementService medicationScheduleManagementService, MedicationScheduleReadService medicationScheduleReadService) {
+    private final MedicationScheduleMapper scheduleMapper;
+
+    public UserActionService(UserService userService, MedicationService medicationService, MedicationMapper medicationMapper, DosageService dosageService, DosageMapper dosageMapper, MedicationScheduleManagementService medicationScheduleManagementService, MedicationScheduleReadService medicationScheduleReadService, MedicationScheduleMapper scheduleMapper) {
         this.userService = userService;
         this.medicationService = medicationService;
         this.medicationMapper = medicationMapper;
@@ -47,6 +53,7 @@ public class UserActionService {
         this.dosageMapper = dosageMapper;
         this.medicationScheduleManagementService = medicationScheduleManagementService;
         this.medicationScheduleReadService = medicationScheduleReadService;
+        this.scheduleMapper = scheduleMapper;
     }
 
     @Transactional
@@ -58,7 +65,7 @@ public class UserActionService {
     }
 
     @Transactional
-    public MedicationDosagePM editMedication(Long medicationId, MedicationDosagePM medicationUpdate, UserDetails userDetails) {
+    public MedicationDosagePM editMedication(Long medicationId, BaseMedicationPM medicationUpdate, UserDetails userDetails) {
         User user = userService.getUser(userDetails.getUsername());
 
         Medication medication = findUserMedication(medicationId, user);
@@ -154,7 +161,7 @@ public class UserActionService {
         return medicationScheduleManagementService.createEntity(medication, dosage, user, medicationSchedulePM);
     }
 
-    public void deleteMedicationSchedule(Long scheduleId, UserDetails userDetails) throws InvalidFrequencyException, UnauthorizedAccessException {
+    public void deleteMedicationSchedule(Long scheduleId, UserDetails userDetails) throws UnauthorizedAccessException {
         User user = userService.getUser(userDetails.getUsername());
         MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
 
@@ -163,6 +170,53 @@ public class UserActionService {
         }
 
         medicationScheduleManagementService.deleteMedicationSchedule(scheduleId);
+    }
+
+    @Transactional
+    public MedicationScheduleView swapMedication(Long scheduleId, Long medicationId, UserDetails userDetails) throws UnauthorizedAccessException {
+        User user = userService.getUser(userDetails.getUsername());
+        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
+
+        if (schedule.getUser().getId() != user.getId()) {
+            throw new UnauthorizedAccessException("You are not allowed to alter this resource.");
+        }
+
+        Medication medication = medicationService.findMedication(medicationId);
+
+        schedule.setMedication(medication);
+
+        return scheduleMapper.toMedicationScheduleView(schedule);
+    }
+
+    @Transactional
+    public MedicationScheduleView editDosage(Long scheduleId, BaseDosagePM dosagePM, UserDetails userDetails) throws UnauthorizedAccessException, InvalidFrequencyException {
+        User user = userService.getUser(userDetails.getUsername());
+        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
+
+        if (schedule.getUser().getId() != user.getId()) {
+            throw new UnauthorizedAccessException("You are not allowed to alter this resource.");
+        }
+
+        Dosage newDosage = dosageService.createDosageEntity(dosagePM);
+
+        schedule.setDosage(newDosage);
+
+        return scheduleMapper.toMedicationScheduleView(schedule);
+    }
+
+    @Transactional
+    public MedicationSchedulePM editSchedule(Long scheduleId, BaseMedicationSchedulePM schedulePM, UserDetails userDetails) throws UnauthorizedAccessException {
+        User user = userService.getUser(userDetails.getUsername());
+        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
+
+        if (schedule.getUser().getId() != user.getId()) {
+            throw new UnauthorizedAccessException("You are not allowed to alter this resource.");
+        }
+
+        schedule.setStartDate(schedulePM.getStartDate());
+        schedule.setEndDate(schedulePM.getEndDate());
+
+        return scheduleMapper.toMedicationScheduleView(schedule);
     }
 }
 
