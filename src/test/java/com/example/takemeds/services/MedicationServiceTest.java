@@ -1,8 +1,8 @@
 package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Medication;
-import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import com.example.takemeds.repositories.MedicationRepository;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -43,39 +44,39 @@ public class MedicationServiceTest {
                 .build();
     }
 
-    private BaseMedicationPM createTestBasePM(String name, String description) {
-        return BaseMedicationPM.builder()
+    private CreateMedicationDto createTestBasePM(String name, String description) {
+        return CreateMedicationDto.builder()
                 .name(name)
                 .description(description)
                 .build();
     }
 
-    private MedicationDosagePM createTestDosagePM(String name, String description) {
-        return MedicationDosagePM.builder()
+    private MedicationView createTestMedicationPM(String name, String description) {
+        return MedicationView.builder()
                 .name(name)
                 .description(description)
                 .build();
     }
 
     @Nested
-    @DisplayName("Tests for createMedicationPM method")
+    @DisplayName("Tests for createMedication method")
     class CreateMedicationPMTests {
 
         @Test
         @DisplayName("should successfully create a medication and return a presentation model")
         void createMedicationPM_shouldSucceed() {
             // Arrange
-            BaseMedicationPM basePM = createTestBasePM("Test Medication", "Test Description");
+            CreateMedicationDto basePM = createTestBasePM("Test Medication", "Test Description");
             Medication medicationToSave = createTestMedication(null, "Test Medication", "Test Description");
             Medication savedMedication = createTestMedication(1L, "Test Medication", "Test Description");
-            MedicationDosagePM expectedPM = createTestDosagePM("Test Medication", "Test Description");
+            MedicationView expectedPM = createTestMedicationPM("Test Medication", "Test Description");
 
-            when(medicationMapper.mapPMToEntity(any(BaseMedicationPM.class))).thenReturn(medicationToSave);
+            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medicationToSave);
             when(medicationRepository.save(any(Medication.class))).thenReturn(savedMedication);
             when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(expectedPM);
 
             // Act
-            MedicationDosagePM resultPM = medicationService.createMedicationPM(basePM);
+            MedicationView resultPM = medicationService.createMedication(basePM);
 
             // Assert
             assertThat(resultPM).isEqualTo(expectedPM);
@@ -91,12 +92,12 @@ public class MedicationServiceTest {
         @DisplayName("should successfully create a medication and return an Entity")
         void createMedicationPM_shouldSucceed() {
             // Arrange
-            BaseMedicationPM basePM = createTestBasePM("Test Medication", "Test Description");
+            CreateMedicationDto basePM = createTestBasePM("Test Medication", "Test Description");
             Medication medicationToSave = createTestMedication(null, "Test Medication", "Test Description");
             Medication savedMedication = createTestMedication(1L, "Test Medication", "Test Description");
             Medication expectedEntity = createTestMedication(1L, "Test Medication", "Test Description");;
 
-            when(medicationMapper.mapPMToEntity(any(BaseMedicationPM.class))).thenReturn(medicationToSave);
+            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medicationToSave);
             when(medicationRepository.save(any(Medication.class))).thenReturn(savedMedication);
 
             // Act
@@ -154,18 +155,18 @@ public class MedicationServiceTest {
             // Arrange
             Long medicationId = 1L;
             Medication oldMedication = createTestMedication(medicationId, "Old Name", "Old Desc");
-            MedicationDosagePM updatePM = MedicationDosagePM.builder()
+            MedicationView updatePM = MedicationView.builder()
                     .name("New Name")
                     .description("New Desc")
                     .build();
             Medication updatedMedication = createTestMedication(medicationId, "New Name", "New Desc");
-            MedicationDosagePM expectedPM = createTestDosagePM("New Name", "New Desc");
+            MedicationView expectedPM = createTestMedicationPM("New Name", "New Desc");
 
             when(medicationRepository.save(any(Medication.class))).thenReturn(updatedMedication);
             when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(expectedPM);
 
             // Act
-            MedicationDosagePM resultPM = medicationService.editMedication(oldMedication, updatePM);
+            MedicationDosageDto resultPM = medicationService.editMedication(oldMedication, updatePM);
 
             // Assert
             assertThat(resultPM).isEqualTo(expectedPM);

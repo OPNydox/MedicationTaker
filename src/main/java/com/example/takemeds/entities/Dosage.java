@@ -42,6 +42,7 @@ public class Dosage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // TO DO remove this field
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")
     private Medication medication;

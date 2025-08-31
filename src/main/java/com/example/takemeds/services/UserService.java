@@ -2,12 +2,12 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Medication;
 import com.example.takemeds.entities.User;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
 import com.example.takemeds.repositories.UserRepository;
 import com.example.takemeds.utils.mappers.MedicationMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -85,9 +86,9 @@ public class UserService implements UserDetailsService {
                                                                  .password(foundUser.getPassword()).build();
     }
 
-    public User saveUser(User user) {
-        return repository.save(user);
+    public Medication findUserMedication(Long medicationId, User user) {
+        return user.getMedications().stream()
+                .filter(entity -> Objects.equals(entity.getId(), medicationId)).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationId + "does not exist or is not assigned."));
     }
-
-
 }

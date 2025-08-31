@@ -1,14 +1,11 @@
 package com.example.takemeds.utils.mappers;
 
-import com.example.takemeds.entities.Receipt;
 import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
-import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
-import com.example.takemeds.presentationModels.medicationSchedulesPMs.BaseMedicationSchedulePM;
+import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -53,7 +50,7 @@ public class MedicationScheduleMapper {
             return null;
         }
 
-        BaseMedicationPM medicationPM = medicationMapper.mapEntityToPM(entity.getMedication());
+        CreateMedicationDto medicationPM = medicationMapper.mapEntityToPM(entity.getMedication());
 
         return MedicationSchedulePM.builder()
                 .startDate(entity.getStartDate())

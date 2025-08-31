@@ -1,7 +1,7 @@
 package com.example.takemeds.presentationModels.medicationSchedulesPMs;
 
 import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
-import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
+import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class CreateMedicationScheduleRequest {
     private Long medicationId;
 
-    private BaseMedicationPM medicationPM;
+    private CreateMedicationDto medicationPM;
 
     private BaseDosagePM dosage;
 

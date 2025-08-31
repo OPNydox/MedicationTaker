@@ -62,8 +62,8 @@ public class MedicationScheduleManagementService {
     private Dosage getDosageForSchedule(CreateMedicationScheduleRequest scheduleRequest, Medication medication) throws InvalidRequestException, InvalidFrequencyException {
         if (scheduleRequest.getDosage() != null) {
             return dosageService.createDosageEntity(scheduleRequest.getDosage());
-        } else if (medication.getDosage() != null) {
-            return medication.getDosage();
+        } else if (medication.getDefaultDosage() != null) {
+            return medication.getDefaultDosage();
         } else {
             throw new InvalidRequestException("Medication schedule must have an attached dosage.");
         }

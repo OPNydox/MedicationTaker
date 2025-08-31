@@ -1,8 +1,7 @@
 package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.Medication;
-import com.example.takemeds.presentationModels.medicationPMs.BaseMedicationPM;
-import com.example.takemeds.presentationModels.medicationPMs.MedicationDosagePM;
+import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ public class MedicationMapperTest {
                 .build();
 
         // When
-        MedicationDosagePM presentationModel = medicationMapper.mapEntityToPM(medication);
+        MedicationDosageDto presentationModel = medicationMapper.mapEntityToPM(medication);
 
         // Then
         assertNotNull(presentationModel);
@@ -49,7 +48,7 @@ public class MedicationMapperTest {
         Medication medication = null;
 
         // When
-        MedicationDosagePM presentationModel = medicationMapper.mapEntityToPM(medication);
+        MedicationDosageDto presentationModel = medicationMapper.mapEntityToPM(medication);
 
         // Then
         assertNull(presentationModel);
@@ -66,7 +65,7 @@ public class MedicationMapperTest {
         medicationList.add(medication2);
 
         // When
-        List<MedicationDosagePM> resultList = medicationMapper.mapMedicationsToPM(medicationList);
+        List<MedicationDosageDto> resultList = medicationMapper.mapMedicationsToPM(medicationList);
 
         // Then
         assertNotNull(resultList);
@@ -82,7 +81,7 @@ public class MedicationMapperTest {
         List<Medication> emptyList = Collections.emptyList();
 
         // When
-        List<MedicationDosagePM> resultList = medicationMapper.mapMedicationsToPM(emptyList);
+        List<MedicationDosageDto> resultList = medicationMapper.mapMedicationsToPM(emptyList);
 
         // Then
         assertNotNull(resultList);
@@ -93,7 +92,7 @@ public class MedicationMapperTest {
     @DisplayName("Should correctly map a MedicationPresentationModel to a Medication entity")
     void mapPMToEntity_validInput_shouldMapCorrectly() {
         // Given
-        BaseMedicationPM presentationModel = BaseMedicationPM.builder()
+        CreateMedicationDto presentationModel = CreateMedicationDto.builder()
                 .id(1L)
                 .name("Advil")
                 .description("Pain reliever")
@@ -113,7 +112,7 @@ public class MedicationMapperTest {
     @DisplayName("Should return null when mapping a null MedicationPresentationModel to an entity")
     void mapPMToEntity_nullInput_shouldReturnNull() {
         // Given
-        MedicationDosagePM presentationModel = null;
+        MedicationDosageDto presentationModel = null;
 
         // When
         Medication entity = medicationMapper.mapPMToEntity(presentationModel);
