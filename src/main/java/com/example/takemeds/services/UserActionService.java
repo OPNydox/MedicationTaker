@@ -143,67 +143,6 @@ public class UserActionService {
                 .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationId + "does not exist or is not assigned."));
     }
 
-    public MedicationScheduleView createMedicationSchedule(MedicationScheduleWithIdsPM medicationScheduleWithIdsPM, UserDetails userDetails) throws InvalidFrequencyException {
-        User user = userService.getUser(userDetails.getUsername());
-        Medication medication = medicationService.findMedication(medicationScheduleWithIdsPM.getMedicationId());
-        Dosage dosage = dosageService.createDosageEntity(medicationScheduleWithIdsPM.getDosage());
-
-        MedicationScheduleView result = medicationScheduleManagementService.createEntity(medication, dosage, user, medicationScheduleWithIdsPM);
-
-        return result;
-    }
-
-    public MedicationScheduleView createMedicationSchedule(MedicationSchedulePM medicationSchedulePM, UserDetails userDetails) throws InvalidFrequencyException {
-        User user = userService.getUser(userDetails.getUsername());
-        Medication medication = medicationService.createMedicationEntity(medicationSchedulePM.getMedication());
-        Dosage dosage = dosageService.createDosageEntity(medicationSchedulePM.getDosage());
-
-        return medicationScheduleManagementService.createEntity(medication, dosage, user, medicationSchedulePM);
-    }
-
-    public void deleteMedicationSchedule(Long scheduleId, UserDetails userDetails) throws UnauthorizedAccessException {
-        User user = userService.getUser(userDetails.getUsername());
-        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
-
-        if (schedule.getUser().getId() != user.getId()) {
-            throw new UnauthorizedAccessException("You are not allowed to delete this resource.");
-        }
-
-        medicationScheduleManagementService.deleteMedicationSchedule(scheduleId);
-    }
-
-    @Transactional
-    public MedicationScheduleView swapMedication(Long scheduleId, Long medicationId, UserDetails userDetails) throws UnauthorizedAccessException {
-        User user = userService.getUser(userDetails.getUsername());
-        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
-
-        if (schedule.getUser().getId() != user.getId()) {
-            throw new UnauthorizedAccessException("You are not allowed to alter this resource.");
-        }
-
-        Medication medication = medicationService.findMedication(medicationId);
-
-        schedule.setMedication(medication);
-
-        return scheduleMapper.toMedicationScheduleView(schedule);
-    }
-
-    @Transactional
-    public MedicationScheduleView editDosage(Long scheduleId, BaseDosagePM dosagePM, UserDetails userDetails) throws UnauthorizedAccessException, InvalidFrequencyException {
-        User user = userService.getUser(userDetails.getUsername());
-        MedicationSchedule schedule = medicationScheduleReadService.findMedicationScheduleById(scheduleId);
-
-        if (schedule.getUser().getId() != user.getId()) {
-            throw new UnauthorizedAccessException("You are not allowed to alter this resource.");
-        }
-
-        Dosage newDosage = dosageService.createDosageEntity(dosagePM);
-
-        schedule.setDosage(newDosage);
-
-        return scheduleMapper.toMedicationScheduleView(schedule);
-    }
-
     @Transactional
     public MedicationSchedulePM editSchedule(Long scheduleId, BaseMedicationSchedulePM schedulePM, UserDetails userDetails) throws UnauthorizedAccessException {
         User user = userService.getUser(userDetails.getUsername());

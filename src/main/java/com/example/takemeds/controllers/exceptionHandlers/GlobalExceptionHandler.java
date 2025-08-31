@@ -1,6 +1,7 @@
 package com.example.takemeds.controllers.exceptionHandlers;
 
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.exceptions.InvalidRequestException;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.EntityNotFoundException;
@@ -84,6 +85,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidFrequencyException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFrequencyException(InvalidFrequencyException ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(ex.getMessage());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFrequencyException(InvalidRequestException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setStatus(HttpStatus.BAD_REQUEST.value());

@@ -96,34 +96,4 @@ public class UserActionController {
         MedicationDosagePM updatedMedication = userActionService.setDefaultDosage(dosagePM, userDetails);
         return new ResponseEntity<>(updatedMedication, HttpStatus.OK);
     }
-
-    @PostMapping("/create/medication-schedule")
-    public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid MedicationScheduleWithIdsPM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
-        MedicationScheduleView scheduleView = userActionService.createMedicationSchedule(medicationSchedulePM, userDetails);
-        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/create/medication-schedule-medication")
-    public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid MedicationSchedulePM medicationSchedulePM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
-        MedicationScheduleView scheduleView = userActionService.createMedicationSchedule(medicationSchedulePM, userDetails);
-        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/delete/medication-schedule/{id}")
-    public ResponseEntity<MedicationScheduleView> deleteMedicationSchedule(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException {
-        userActionService.deleteMedicationSchedule(id, userDetails);
-        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-    }
-
-    @PostMapping("/swap-medication/schedule/{id}/medication/{id}")
-    public ResponseEntity<MedicationScheduleView> scheduleSwapMedication(@PathVariable Long scheduleId, @PathVariable Long medicationId, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException {
-        MedicationScheduleView scheduleView = userActionService.swapMedication(scheduleId, medicationId, userDetails);
-        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/edit-dosage/schedule/{id}")
-    public ResponseEntity<MedicationScheduleView> scheduleEditDosage(@PathVariable Long scheduleId, @RequestBody @Valid BaseDosagePM dosagePM, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException, InvalidFrequencyException {
-        MedicationScheduleView scheduleView = userActionService.editDosage(scheduleId, dosagePM, userDetails);
-        return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
-    }
 }
