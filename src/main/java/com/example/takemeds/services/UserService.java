@@ -5,6 +5,7 @@ import com.example.takemeds.entities.User;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
 import com.example.takemeds.presentationModels.UserPresentationModel;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import com.example.takemeds.repositories.UserRepository;
 import com.example.takemeds.utils.mappers.MedicationMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -90,5 +92,16 @@ public class UserService implements UserDetailsService {
         return user.getMedications().stream()
                 .filter(entity -> Objects.equals(entity.getId(), medicationId)).findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Medication with id " + medicationId + "does not exist or is not assigned."));
+    }
+
+    private User findUserWithMedicationAndBaseDosages(String username) {
+        return repository.findWithMedicationsByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+    }
+
+    public List<MedicationView> showMyMedication(UserDetails userDetails) {
+        User user = findUserWithMedicationAndBaseDosages(userDetails.getUsername());
+
+        return medicationMapper.mapMedicationsToPM(user.getMedications());
     }
 }

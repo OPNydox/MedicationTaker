@@ -7,6 +7,7 @@ import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto
 import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import com.example.takemeds.services.MedicationLogService;
 import com.example.takemeds.services.UserActionService;
+import com.example.takemeds.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,13 @@ public class UserActionController {
 
     private final MedicationLogService medicationLogService;
 
+    private final UserService userService;
+
     private final UserActionService userActionService;
 
-    public UserActionController(MedicationLogService medicationLogService, UserActionService userActionService) {
+    public UserActionController(MedicationLogService medicationLogService, UserService userService, UserActionService userActionService) {
         this.medicationLogService = medicationLogService;
+        this.userService = userService;
         this.userActionService = userActionService;
     }
 
@@ -44,13 +48,7 @@ public class UserActionController {
 
     @PostMapping("/show/my/medication")
     public ResponseEntity<List<MedicationView>> showMyMedication(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationView> medications = userActionService.showMyMedication(userDetails.getUsername());
+        List<MedicationView> medications = userService.showMyMedication(userDetails);
         return new ResponseEntity<>(medications, HttpStatus.OK);
-    }
-
-    @GetMapping("/show/my/medication")
-    public ResponseEntity<List<MedicationView>> showMyMedications(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationView> result = userActionService.showMyMedication(userDetails.getUsername());
-        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

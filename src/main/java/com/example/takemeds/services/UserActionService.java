@@ -47,13 +47,5 @@ public class UserActionService {
         this.medicationScheduleReadService = medicationScheduleReadService;
         this.scheduleMapper = scheduleMapper;
     }
-
-    @Transactional
-    public List<MedicationView> showMyMedication(String username) {
-        User user = userService.getUser(username);
-        List<Medication> medications = user.getMedications();
-
-        return medicationMapper.mapMedicationsToPM(medications);
-    }
 }
 

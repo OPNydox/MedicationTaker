@@ -3,6 +3,7 @@ package com.example.takemeds.utils.mappers;
 import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
 import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
+import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
@@ -50,7 +51,7 @@ public class MedicationScheduleMapper {
             return null;
         }
 
-        CreateMedicationDto medicationPM = medicationMapper.mapEntityToPM(entity.getMedication());
+        MedicationView medicationPM = medicationMapper.mapEntityToPM(entity.getMedication());
 
         return MedicationSchedulePM.builder()
                 .startDate(entity.getStartDate())

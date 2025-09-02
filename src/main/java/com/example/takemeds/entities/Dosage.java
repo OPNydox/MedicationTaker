@@ -43,7 +43,7 @@ public class Dosage {
     private Long id;
 
     // TO DO remove this field
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")
     private Medication medication;
 

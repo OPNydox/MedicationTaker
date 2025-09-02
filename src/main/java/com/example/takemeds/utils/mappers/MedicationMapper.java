@@ -12,7 +12,8 @@ import java.util.List;
 public class MedicationMapper {
     private DosageMapper dosageMapper;
 
-    public MedicationMapper() {
+    public MedicationMapper(DosageMapper dosageMapper) {
+        this.dosageMapper = dosageMapper;
     }
 
     public MedicationView mapEntityToPM(Medication medication) {

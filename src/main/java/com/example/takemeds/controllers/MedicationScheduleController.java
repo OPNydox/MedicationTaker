@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/med/user/schedule")
+@RequestMapping("/api/med/schedule")
 public class MedicationScheduleController {
     private final MedicationScheduleManagementService managementService;
 
@@ -48,7 +48,7 @@ public class MedicationScheduleController {
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/swap-medication/schedule/{id}/medication/{id}")
+    @PostMapping("/swap-medication/schedule/{scheduleId}/medication/{medicationId}")
     public ResponseEntity<MedicationScheduleView> scheduleSwapMedication(@PathVariable Long scheduleId, @PathVariable Long medicationId, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException {
         MedicationScheduleView scheduleView = updateService.swapMedication(scheduleId, medicationId, userDetails);
         return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);

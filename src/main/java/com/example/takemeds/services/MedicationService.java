@@ -93,7 +93,7 @@ public class MedicationService {
         Medication medication = userService.findUserMedication(medicationId, user);
 
         medication.setName(medicationUpdate.getName());
-        medication.setDescription(medication.getDescription());
+        medication.setDescription(medicationUpdate.getDescription());
 
         return medicationMapper.mapEntityToPM(medication);
     }

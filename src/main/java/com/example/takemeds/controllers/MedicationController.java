@@ -39,7 +39,6 @@ public class MedicationController {
         return ResponseEntity.noContent().build();
     }
 
-
     @PutMapping("/edit/my/medication/{id}")
     public ResponseEntity<MedicationView> editMyMedication(@PathVariable Long id, @RequestBody CreateMedicationDto medication, @AuthenticationPrincipal UserDetails userDetails) {
         MedicationView result = medicationService.editMedication(id, medication, userDetails);

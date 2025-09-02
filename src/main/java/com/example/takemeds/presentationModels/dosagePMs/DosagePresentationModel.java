@@ -1,5 +1,6 @@
 package com.example.takemeds.presentationModels.dosagePMs;
 
+import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DosagePresentationModel  extends BaseDosagePM {
-    private MedicationDosageDto medication;
+    private MedicationView medication;
 }
