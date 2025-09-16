@@ -42,8 +42,10 @@ public class MedicationService {
         Medication createdMedication = createMedicationEntity(medicationDto);
         Dosage dosage = getDosage(medicationDto);
 
-        dosage.setMedication(createdMedication);
-        createdMedication.setDefaultDosage(dosage);
+        if (dosage != null) {
+            dosage.setMedication(createdMedication);
+            createdMedication.setDefaultDosage(dosage);
+        }
 
         user.getMedications().add(createdMedication);
 

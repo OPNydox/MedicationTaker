@@ -1,6 +1,12 @@
 package com.example.takemeds.services;
 
+import com.example.takemeds.entities.Dosage;
 import com.example.takemeds.entities.Medication;
+import com.example.takemeds.entities.User;
+import com.example.takemeds.entities.enums.Frequency;
+import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
+import com.example.takemeds.presentationModels.dosagePMs.CreateDosagePM;
 import com.example.takemeds.presentationModels.medicationPMs.CreateMedicationDto;
 import com.example.takemeds.presentationModels.medicationPMs.MedicationView;
 import com.example.takemeds.repositories.MedicationRepository;
@@ -15,7 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,153 +35,146 @@ import static org.mockito.Mockito.*;
 public class MedicationServiceTest {
     @Mock
     private MedicationRepository medicationRepository;
-
+    @Mock
+    private UserService userService;
     @Mock
     private MedicationMapper medicationMapper;
-
     @Mock
     private DosageService dosageService;
+    @Mock
+    private UserDetails userDetails;
+
+    private final String MEDICATION_NAME = "TestMed";
+
+    private final String MEDICATION_DESC = "TestDesc";
+
+    private final Long MEDICATION_ID = 1L;
 
     @InjectMocks
     private MedicationService medicationService;
 
-    private Medication createTestMedication(Long id, String name, String description) {
-        return Medication.builder()
-                .id(id)
-                .name(name)
-                .description(description)
+    // Helper methods for creating test data
+    private User createTestUser(String username) {
+        return User.builder().id(1L).email(username).medications(new ArrayList<>()).build();
+    }
+
+    private Medication createTestMedication() {
+        return Medication.builder().id(MEDICATION_ID).name(MEDICATION_NAME).description(MEDICATION_DESC).build();
+    }
+
+    private CreateMedicationDto createTestCreateMedicationDto() {
+
+        return CreateMedicationDto.builder().name(MEDICATION_NAME).description(MEDICATION_DESC).build();
+    }
+
+    private BaseDosagePM createDosagePM() {
+        return BaseDosagePM.builder()
+                .frequency("DAILY")
+                .timesPerDay((byte) 2)
+                .timesToTake(List.of(LocalTime.of(9, 0), LocalTime.of(17, 0)))
                 .build();
     }
 
-    private CreateMedicationDto createTestBasePM(String name, String description) {
-        return CreateMedicationDto.builder()
-                .name(name)
-                .description(description)
+    private Dosage createDosage() {
+        return Dosage.builder()
+                .frequency(Frequency.DAILY)
+                .scheduledTime(LocalDateTime.now())
+                .timesPerDay((byte) 2)
+                .timesToTake(List.of(LocalTime.of(9, 0), LocalTime.of(17, 0)))
                 .build();
     }
 
-    private MedicationView createTestMedicationPM(String name, String description) {
-        return MedicationView.builder()
-                .name(name)
-                .description(description)
-                .build();
+    private MedicationView createTestMedicationView() {
+        return MedicationView.builder().name(MEDICATION_NAME).description(MEDICATION_DESC).build();
     }
 
     @Nested
     @DisplayName("Tests for createMedication method")
-    class CreateMedicationPMTests {
+    class CreateMedicationTests {
 
         @Test
-        @DisplayName("should successfully create a medication and return a presentation model")
-        void createMedicationPM_shouldSucceed() {
+        @DisplayName("should create a new medication with a default dosage and assign it to the user")
+        void createMedication_shouldSucceed() throws InvalidFrequencyException {
             // Arrange
-            CreateMedicationDto basePM = createTestBasePM("Test Medication", "Test Description");
-            Medication medicationToSave = createTestMedication(null, "Test Medication", "Test Description");
-            Medication savedMedication = createTestMedication(1L, "Test Medication", "Test Description");
-            MedicationView expectedPM = createTestMedicationPM("Test Medication", "Test Description");
+            String username = "testuser";
+            User user = createTestUser(username);
+            BaseDosagePM dosageDto = createDosagePM();
+            CreateMedicationDto medicationDto = createTestCreateMedicationDto();
+            medicationDto.setDefaultDosagePM(dosageDto);
+            Dosage dosage = createDosage();
+            Medication medication = createTestMedication();
+            MedicationView medicationView = createTestMedicationView();
 
-            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medicationToSave);
-            when(medicationRepository.save(any(Medication.class))).thenReturn(savedMedication);
-            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(expectedPM);
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medication);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+            when(dosageService.createDosageEntity(dosageDto)).thenReturn(dosage);
+            when(medicationRepository.save(any(Medication.class))).thenReturn(medication);
+
 
             // Act
-            MedicationView resultPM = medicationService.createMedication(basePM);
+            MedicationView result = medicationService.createMedication(medicationDto, userDetails);
 
             // Assert
-            assertThat(resultPM).isEqualTo(expectedPM);
-            verify(medicationRepository, times(1)).save(medicationToSave);
-        }
-    }
-
-    @Nested
-    @DisplayName("Tests for createMedicationEntity method")
-    class CreateMedicationEntityTests {
-
-        @Test
-        @DisplayName("should successfully create a medication and return an Entity")
-        void createMedicationPM_shouldSucceed() {
-            // Arrange
-            CreateMedicationDto basePM = createTestBasePM("Test Medication", "Test Description");
-            Medication medicationToSave = createTestMedication(null, "Test Medication", "Test Description");
-            Medication savedMedication = createTestMedication(1L, "Test Medication", "Test Description");
-            Medication expectedEntity = createTestMedication(1L, "Test Medication", "Test Description");;
-
-            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medicationToSave);
-            when(medicationRepository.save(any(Medication.class))).thenReturn(savedMedication);
-
-            // Act
-            Medication resultPM = medicationService.createMedicationEntity(basePM);
-
-            // Assert
-            assertThat(expectedEntity.getId()).isEqualTo(resultPM.getId());
-            assertThat(expectedEntity.getName()).isEqualTo(resultPM.getName());
-            assertThat(expectedEntity.getDescription()).isEqualTo(resultPM.getDescription());
-            verify(medicationRepository, times(1)).save(medicationToSave);
-        }
-    }
-
-    @Nested
-    @DisplayName("Tests for findMedication method")
-    class FindMedicationTests {
-
-        @Test
-        @DisplayName("should find and return a medication when a valid ID is provided")
-        void findMedication_withValidId_shouldReturnMedication() {
-            // Arrange
-            Long medicationId = 1L;
-            Medication expectedMedication = createTestMedication(medicationId, "Test Med", "Desc");
-            when(medicationRepository.findById(medicationId)).thenReturn(Optional.of(expectedMedication));
-
-            // Act
-            Medication foundMedication = medicationService.findMedication(medicationId);
-
-            // Assert
-            assertThat(foundMedication).isEqualTo(expectedMedication);
-            verify(medicationRepository, times(1)).findById(medicationId);
+            assertThat(result).isNotNull();
+            assertThat(user.getMedications()).contains(medication);
+            assertThat(medication.getDefaultDosage()).isEqualTo(dosage);
+            assertThat(dosage.getMedication()).isEqualTo(medication);
+            verify(userService).getUser(username);
+            verify(medicationRepository, times(1)).save(medication);
         }
 
         @Test
-        @DisplayName("should throw EntityNotFoundException if medication ID does not exist")
-        void findMedication_withInvalidId_shouldThrowException() {
+        @DisplayName("should create a medication with an existing dosage and assign it to the user")
+        void createMedication_withExistingDosageId_shouldSucceed() throws InvalidFrequencyException {
             // Arrange
-            Long medicationId = 999L;
-            when(medicationRepository.findById(medicationId)).thenReturn(Optional.empty());
+            String username = "testuser";
+            User user = createTestUser(username);
+            CreateMedicationDto medicationDto = createTestCreateMedicationDto();
+            Dosage existingDosage = new Dosage();
+            medicationDto.setDosageId(1L);
+            Medication medication = createTestMedication();
+            MedicationView medicationView = createTestMedicationView();
+
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medication);
+            when(dosageService.findDosageEntity(1L)).thenReturn(existingDosage);
+            when(medicationRepository.save(any(Medication.class))).thenReturn(medication);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+
+            // Act
+            MedicationView result = medicationService.createMedication(medicationDto, userDetails);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(user.getMedications()).contains(medication);
+            assertThat(medication.getDefaultDosage()).isEqualTo(existingDosage);
+            assertThat(existingDosage.getMedication()).isEqualTo(medication);
+            verify(dosageService, never()).createDosageEntity(any());
+        }
+
+        @Test
+        @DisplayName("should throw InvalidFrequencyException if dosage creation fails")
+        void createMedication_shouldThrowException_whenDosageCreationFails() throws InvalidFrequencyException {
+            // Arrange
+            String username = "testuser";
+            User user = createTestUser(username);
+            CreateMedicationDto medicationDto = createTestCreateMedicationDto();
+            BaseDosagePM baseDosagePM = createDosagePM();
+            baseDosagePM.setFrequency("Invalid frequency");
+            medicationDto.setDefaultDosagePM(baseDosagePM);
+
+            when(userService.getUser(username)).thenReturn(user);
+            when(userDetails.getUsername()).thenReturn(username);
+            when(dosageService.createDosageEntity(baseDosagePM)).thenThrow(new InvalidFrequencyException("Invalid frequency"));
 
             // Act & Assert
-            assertThatThrownBy(() -> medicationService.findMedication(medicationId))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessageContaining("Medication with id " + medicationId + " does not exist");
-        }
-    }
+            assertThatThrownBy(() -> medicationService.createMedication(medicationDto, userDetails))
+                    .isInstanceOf(InvalidFrequencyException.class);
 
-    @Nested
-    @DisplayName("Tests for editMedication method")
-    class EditMedicationTests {
-
-        @Test
-        @DisplayName("should successfully edit a medication and return the updated presentation model")
-        void editMedication_shouldSucceed() {
-            // Arrange
-            Long medicationId = 1L;
-            Medication oldMedication = createTestMedication(medicationId, "Old Name", "Old Desc");
-            MedicationView updatePM = MedicationView.builder()
-                    .name("New Name")
-                    .description("New Desc")
-                    .build();
-            Medication updatedMedication = createTestMedication(medicationId, "New Name", "New Desc");
-            MedicationView expectedPM = createTestMedicationPM("New Name", "New Desc");
-
-            when(medicationRepository.save(any(Medication.class))).thenReturn(updatedMedication);
-            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(expectedPM);
-
-            // Act
-            MedicationDosageDto resultPM = medicationService.editMedication(oldMedication, updatePM);
-
-            // Assert
-            assertThat(resultPM).isEqualTo(expectedPM);
-            assertThat(oldMedication.getName()).isEqualTo("New Name");
-            assertThat(oldMedication.getDescription()).isEqualTo("New Desc");
-            verify(medicationRepository, times(1)).save(oldMedication);
+            verify(medicationRepository, never()).save(any(Medication.class));
         }
     }
 
@@ -181,32 +183,43 @@ public class MedicationServiceTest {
     class DeleteMedicationTests {
 
         @Test
-        @DisplayName("should successfully delete a medication when a valid ID is provided")
-        void deleteMedication_withValidId_shouldSucceed() {
+        @DisplayName("should successfully delete a medication")
+        void deleteMedication_shouldSucceed() {
             // Arrange
             Long medicationId = 1L;
-            Medication medicationToDelete = createTestMedication(medicationId, "To Delete", "Desc");
-            when(medicationRepository.findById(medicationId)).thenReturn(Optional.of(medicationToDelete));
-            doNothing().when(medicationRepository).delete(medicationToDelete);
+            String username = "testuser";
+            User user = createTestUser(username);
+            Medication medicationToDelete = createTestMedication();
+            user.getMedications().add(medicationToDelete);
+
+            when(userService.getUser(anyString())).thenReturn(user);
+            when(userService.findUserMedication(medicationId, user)).thenReturn(medicationToDelete);
+            when(userDetails.getUsername()).thenReturn("");
 
             // Act
-            medicationService.deleteMedication(medicationId);
+            medicationService.deleteMedication(medicationId, userDetails);
 
             // Assert
+            assertThat(user.getMedications()).doesNotContain(medicationToDelete);
             verify(medicationRepository, times(1)).delete(medicationToDelete);
         }
 
         @Test
-        @DisplayName("should throw EntityNotFoundException when trying to delete a non-existent medication")
-        void deleteMedication_withInvalidId_shouldThrowException() {
+        @DisplayName("should throw EntityNotFoundException when medication does not exist or is not assigned to the user")
+        void deleteMedication_shouldThrowException() {
             // Arrange
-            Long medicationId = 999L;
-            when(medicationRepository.findById(medicationId)).thenReturn(Optional.empty());
+            Long medicationId = 99L;
+            String username = "testuser";
+            User user = createTestUser(username);
+
+            when(userService.getUser(anyString())).thenReturn(user);
+            when(userService.findUserMedication(medicationId, user)).thenThrow(new EntityNotFoundException("Medication not found"));
+            when(userDetails.getUsername()).thenReturn(username);
 
             // Act & Assert
-            assertThatThrownBy(() -> medicationService.deleteMedication(medicationId))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessageContaining("Medication with id " + medicationId + " does not exist");
+            assertThatThrownBy(() -> medicationService.deleteMedication(medicationId, userDetails))
+                    .isInstanceOf(EntityNotFoundException.class);
+            verify(medicationRepository, never()).delete(any(Medication.class));
         }
     }
 }

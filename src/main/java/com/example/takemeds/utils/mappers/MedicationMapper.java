@@ -30,6 +30,10 @@ public class MedicationMapper {
     public List<MedicationView> mapMedicationsToPM(List<Medication> input) {
         List<MedicationView> result = new ArrayList<>();
 
+        if (input == null) {
+            return result;
+        }
+
         for (Medication medication : input) {
             result.add(mapEntityToPM(medication));
         }
