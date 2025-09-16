@@ -1,6 +1,7 @@
 package com.example.takemeds.entities;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -44,7 +45,7 @@ public class Medication {
     @Lob
     private byte[] image; // Store image of the medication
 
-    @OneToOne(mappedBy = "medication", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "medication", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
     private Dosage defaultDosage;
 
     @ManyToMany(mappedBy = "medications")

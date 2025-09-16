@@ -95,8 +95,7 @@ public class UserService implements UserDetailsService {
     }
 
     private User findUserWithMedicationAndBaseDosages(String username) {
-        return repository.findWithMedicationsByEmail(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+        return repository.findByEmail(username);
     }
 
     public List<MedicationView> showMyMedication(UserDetails userDetails) {

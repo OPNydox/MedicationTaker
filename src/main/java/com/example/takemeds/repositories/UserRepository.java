@@ -12,14 +12,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    @EntityGraph(attributePaths = {"medications", "medications.defaultDosage", "role"})
     User findByEmail(String email);
-
-    @Query("""
-       SELECT u FROM User u
-       LEFT JOIN FETCH u.medications m
-       LEFT JOIN FETCH m.baseDosages
-       WHERE u.email = :email
-       """)
-    Optional<User> findWithMedicationsByEmail(String email);
-
 }
