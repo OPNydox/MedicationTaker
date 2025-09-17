@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -156,6 +157,33 @@ public class MedicationServiceTest {
         }
 
         @Test
+        @DisplayName("should create a medication without a dosage")
+        void createMedication_withoutDosage_shouldSucceed() throws InvalidFrequencyException {
+            // Arrange
+            String username = "testuser";
+            User user = createTestUser(username);
+            CreateMedicationDto medicationDto = createTestCreateMedicationDto();
+            Medication medication = createTestMedication();
+            MedicationView medicationView = createTestMedicationView();
+
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(medicationMapper.mapPMToEntity(any(CreateMedicationDto.class))).thenReturn(medication);
+            when(medicationRepository.save(any(Medication.class))).thenReturn(medication);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+
+            // Act
+            MedicationView result = medicationService.createMedication(medicationDto, userDetails);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(user.getMedications()).contains(medication);
+            assertThat(result.getDefaultDosage()).isNull();
+            verify(dosageService, never()).createDosageEntity(any());
+            verify(dosageService, never()).findDosageEntity(any());
+        }
+
+        @Test
         @DisplayName("should throw InvalidFrequencyException if dosage creation fails")
         void createMedication_shouldThrowException_whenDosageCreationFails() throws InvalidFrequencyException {
             // Arrange
@@ -220,6 +248,117 @@ public class MedicationServiceTest {
             assertThatThrownBy(() -> medicationService.deleteMedication(medicationId, userDetails))
                     .isInstanceOf(EntityNotFoundException.class);
             verify(medicationRepository, never()).delete(any(Medication.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for findMedication method")
+    class FindMedication {
+
+        @Test
+        @DisplayName("should successfully find a medication")
+        void deleteMedication_shouldSucceed() {
+            // Arrange
+            long medicationId = 1L;
+            Medication medication = createTestMedication();
+            Medication foundMedication;
+
+            when(medicationRepository.findById(medicationId)).thenReturn(Optional.of(medication));
+
+            // Act
+            foundMedication = medicationService.findMedication(medicationId);
+
+            // Assert
+            assertThat(foundMedication).isEqualTo(medication);
+        }
+
+        @Test
+        @DisplayName("should throw EntityNotFoundException when medication does not exist")
+        void deleteMedication_shouldThrowException() {
+            // Arrange
+            long medicationId = 99L;
+            Medication foundMedication = null;
+
+            when(medicationRepository.findById(medicationId)).thenReturn(Optional.empty());
+
+            // Assert & Act
+            assertThatThrownBy(() -> medicationService.findMedication(medicationId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            assertThat(foundMedication).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for editMedication method")
+    class EditMedicationTests {
+
+        @Test
+        @DisplayName("should successfully edit a medication")
+        void createMedication_shouldSucceed() {
+            // Arrange
+            String username = "testuser";
+            String updatedName = "Updated Name";
+            String updatedDescription = "Updated Description";
+            long medicationId = 1L;
+            User user = createTestUser(username);
+            CreateMedicationDto updateDto = CreateMedicationDto.builder().name(updatedName)
+                                                                         .description(updatedDescription).build();
+            Medication expectedMedication = Medication.builder().name(updatedName)
+                                                        .description(updatedDescription).build();
+
+            Medication oldMedication = createTestMedication();
+            MedicationView medicationView = MedicationView.builder().name(updatedName)
+                                                                    .description(updatedDescription).build();
+
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(userService.findUserMedication(medicationId, user)).thenReturn(oldMedication);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+
+
+            // Act
+            MedicationView result = medicationService.editMedication(medicationId, updateDto, userDetails);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(oldMedication.getName()).isEqualTo(expectedMedication.getName());
+            assertThat(oldMedication.getDescription()).isEqualTo(expectedMedication.getDescription());
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for setDefaultDosage method")
+    class SetDosageTests {
+
+        @Test
+        @DisplayName("should successfully set a default dosage for a medication")
+        void createMedication_shouldSucceed() throws InvalidFrequencyException {
+            // Arrange
+            String username = "testuser";
+            long medicationId = 1L;
+            User user = createTestUser(username);
+            Dosage dosage = createDosage();
+            CreateDosagePM createDosage = CreateDosagePM.builder().medicationId(medicationId)
+                    .frequency("DAILY")
+                    .timesPerDay((byte) 2).build();
+            Medication foundMedication = createTestMedication();
+            MedicationView medicationView = createTestMedicationView();
+
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(userService.findUserMedication(medicationId, user)).thenReturn(foundMedication);
+            when(dosageService.createDosageEntity(any(BaseDosagePM.class))).thenReturn(dosage);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+
+
+            // Act
+            MedicationView result = medicationService.setDefaultDosage(createDosage, userDetails);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(foundMedication.getDefaultDosage()).isNotNull();
+
         }
     }
 }
