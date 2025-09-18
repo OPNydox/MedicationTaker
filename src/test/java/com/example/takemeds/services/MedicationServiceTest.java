@@ -295,7 +295,7 @@ public class MedicationServiceTest {
 
         @Test
         @DisplayName("should successfully edit a medication")
-        void createMedication_shouldSucceed() {
+        void editMedication_shouldSucceed() {
             // Arrange
             String username = "testuser";
             String updatedName = "Updated Name";
@@ -333,7 +333,7 @@ public class MedicationServiceTest {
 
         @Test
         @DisplayName("should successfully set a default dosage for a medication")
-        void createMedication_shouldSucceed() throws InvalidFrequencyException {
+        void setDefaultDosage_shouldSucceed() throws InvalidFrequencyException {
             // Arrange
             String username = "testuser";
             long medicationId = 1L;
@@ -358,7 +358,32 @@ public class MedicationServiceTest {
             // Assert
             assertThat(result).isNotNull();
             assertThat(foundMedication.getDefaultDosage()).isNotNull();
+        }
 
+        @Test
+        @DisplayName("should successfully set a default dosage for a medication")
+        void setDefautlDosage_dosageId_shouldSuccede() throws InvalidFrequencyException {
+            // Arrange
+            String username = "testuser";
+            long medicationId = 1L;
+            long dosageId = 1L;
+            User user = createTestUser(username);
+            Dosage foundDosage = createDosage();
+            Medication foundMedication = createTestMedication();
+            MedicationView medicationView = createTestMedicationView();
+
+            when(userDetails.getUsername()).thenReturn(username);
+            when(userService.getUser(username)).thenReturn(user);
+            when(userService.findUserMedication(medicationId, user)).thenReturn(foundMedication);
+            when(medicationMapper.mapEntityToPM(any(Medication.class))).thenReturn(medicationView);
+            when(dosageService.findDosageEntity(dosageId)).thenReturn(foundDosage);
+
+            // Act
+            MedicationView result = medicationService.setDefaultDosage(medicationId, dosageId, userDetails);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(foundMedication.getDefaultDosage()).isNotNull();
         }
     }
 }
