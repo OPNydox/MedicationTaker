@@ -23,7 +23,6 @@ public class DosageService {
         this.dosageMapper = dosageMapper;
     }
 
-
     public DosagePresentationModel createAndMapDosage(BaseDosagePM dosagePM) throws InvalidFrequencyException {
         Dosage newDosage = createDosageEntity(dosagePM);
 
