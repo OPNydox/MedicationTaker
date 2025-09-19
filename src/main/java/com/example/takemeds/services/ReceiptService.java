@@ -1,9 +1,11 @@
 package com.example.takemeds.services;
 
+import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.Receipt;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.CreateMedicationScheduleRequest;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.repositories.ReceiptRepository;
 import com.example.takemeds.utils.mappers.ReceiptMapper;
@@ -22,11 +24,14 @@ public class ReceiptService {
 
     private final ReceiptMapper receiptMapper;
 
+    private final MedicationScheduleManagementService scheduleManagementService;
+
     private final MedicationScheduleMapper medicationScheduleMapper;
 
-    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, MedicationScheduleMapper medicationScheduleMapper) {
+    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, MedicationScheduleManagementService scheduleManagementService, MedicationScheduleMapper medicationScheduleMapper) {
         this.receiptRepository = receiptRepository;
         this.receiptMapper = receiptMapper;
+        this.scheduleManagementService = scheduleManagementService;
         this.medicationScheduleMapper = medicationScheduleMapper;
     }
 
@@ -40,6 +45,10 @@ public class ReceiptService {
     public ReceiptPresentationModel createReceipt(ReceiptPresentationModel presentationModel) throws InvalidFrequencyException {
         Receipt receipt = receiptMapper.toEntity(presentationModel);
 
+        if (presentationModel.isFinalized()) {
+            finalizeReceipt(receipt);
+        }
+
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 
@@ -47,15 +56,16 @@ public class ReceiptService {
      * Retrieves a receipt by its ID.
      *
      * @param id The ID of the receipt to retrieve.
-     * @return An Optional containing the Receipt if found, or empty if not.
+     * @return A presentation model of the found receipt
      */
     public ReceiptPresentationModel getReceiptById(Long id) {
-        Optional<Receipt> foundReceipt = receiptRepository.findById(id);
+        return receiptMapper.toPresentationModel(findReceiptEntity(id));
+    }
 
-        if (foundReceipt.isEmpty()) {
-            throw new EntityNotFoundException("Receipt with id " + id + " does not exist");
-        }
-        return receiptMapper.toPresentationModel(foundReceipt.get());
+    protected Receipt findReceiptEntity(Long receiptId) {
+        return receiptRepository.findById(receiptId)
+                .orElseThrow(() -> new IllegalArgumentException("Receipt with id " + receiptId + " does not exist"));
+
     }
 
     /**
@@ -79,11 +89,10 @@ public class ReceiptService {
      * @throws IllegalArgumentException If the receipt with the given ID is not found.
      */
     @Transactional
-    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, MedicationSchedulePM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
-        Receipt receipt = receiptRepository.findById(receiptId)
-                .orElseThrow(() -> new IllegalArgumentException("Receipt with ID " + receiptId + " not found."));
+    public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, CreateMedicationScheduleRequest userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
+        Receipt receipt = findReceiptEntity(receiptId);
 
-        //receipt.AddUserMedication(medicationScheduleMapper.toUserMedicationEntity(userMedication));
+        receipt.AddUserMedication(scheduleManagementService.createMedicationSchedule(userMedication, receipt.getUser()));
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 
@@ -96,11 +105,15 @@ public class ReceiptService {
      */
     @Transactional
     public Receipt finalizeReceipt(Long receiptId) {
-        Receipt receipt = receiptRepository.findById(receiptId)
-                .orElseThrow(() -> new IllegalArgumentException("Receipt with ID " + receiptId + " not found."));
+        Receipt receipt = findReceiptEntity(receiptId);
+        finalizeReceipt(receipt);
 
-        receipt.setFinalized(true);
-        return receiptRepository.save(receipt);
+        return receipt;
+    }
+
+    public Receipt finalizeReceipt(Receipt receipt) {
+        // finilize receipt
+        return null;
     }
 
     /**
