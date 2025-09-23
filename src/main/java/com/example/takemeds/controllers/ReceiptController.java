@@ -7,6 +7,7 @@ import com.example.takemeds.presentationModels.medicationSchedulesPMs.Medication
 import com.example.takemeds.services.ReceiptService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,8 +53,8 @@ public class ReceiptController {
     @PostMapping("/add/med/{id}")
     public ResponseEntity<ReceiptPresentationModel> addMedicineToReceipt(@PathVariable Long id,
                                                                          @RequestBody @Valid MedicationSchedulePM userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
-        ReceiptPresentationModel editedReceipt = receiptService.addUserMedicationToReceipt(id, userMedication);
+        //ReceiptPresentationModel editedReceipt = receiptService.addUserMedicationToReceipt(id, userMedication);
 
-        return new ResponseEntity<>(editedReceipt, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

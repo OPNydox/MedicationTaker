@@ -23,12 +23,11 @@ public class MedicationTakenLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medication_id", nullable = false)
-    private Medication medication;
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private MedicationSchedule medicationSchedule;
 
     private LocalDateTime timeTaken;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private String notes;
+
 }

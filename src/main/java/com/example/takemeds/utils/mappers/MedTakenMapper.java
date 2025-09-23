@@ -1,18 +1,21 @@
 package com.example.takemeds.utils.mappers;
 
 import com.example.takemeds.entities.MedicationTakenLog;
-import com.example.takemeds.presentationModels.MedLogPresentationModel;
+import com.example.takemeds.presentationModels.takenLogPMs.LogResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MedTakenMapper {
-    public MedLogPresentationModel entityToPM(MedicationTakenLog medicationTakenLog) {
-        MedLogPresentationModel pm = new MedLogPresentationModel();
+    public LogResponseDto mapToDto(MedicationTakenLog log) {
+        if (log == null) {
+            return null;
+        }
 
-        pm.setUsername(medicationTakenLog.getUser().getEmail());
-        pm.setMedicationName(medicationTakenLog.getMedication().getName());
-        pm.setTimeTaken(medicationTakenLog.getTimeTaken());
-
-        return pm;
+        return LogResponseDto.builder()
+                .id(log.getId())
+                .scheduleId(log.getMedicationSchedule().getId())
+                .timeTaken(log.getTimeTaken())
+                .notes(log.getNotes())
+                .build();
     }
 }

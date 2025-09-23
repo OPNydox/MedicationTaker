@@ -92,7 +92,7 @@ public class ReceiptService {
     public ReceiptPresentationModel addUserMedicationToReceipt(Long receiptId, CreateMedicationScheduleRequest userMedication) throws FinalizedReceiptException, InvalidFrequencyException {
         Receipt receipt = findReceiptEntity(receiptId);
 
-        receipt.AddUserMedication(scheduleManagementService.createMedicationSchedule(userMedication, receipt.getUser()));
+        //receipt.AddUserMedication(scheduleManagementService.createMedicationSchedule(userMedication, receipt.getUser()));
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 
