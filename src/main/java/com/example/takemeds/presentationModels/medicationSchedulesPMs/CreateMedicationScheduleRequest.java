@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class CreateMedicationScheduleRequest {
     private Long medicationId;
 
-    private CreateMedicationDto medicationPM;
+    private CreateMedicationDto medication;
 
     private BaseDosagePM dosage;
 

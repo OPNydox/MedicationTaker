@@ -3,7 +3,9 @@ package com.example.takemeds.services;
 import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
 import com.example.takemeds.repositories.MedicationScheduleRepository;
+import com.example.takemeds.utils.mappers.MedicationScheduleMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,16 +20,29 @@ public class MedicationScheduleReadService {
 
     private final MedicationScheduleRepository medicationScheduleRepository;
 
-    public MedicationScheduleReadService(UserService userService, MedicationScheduleRepository medicationScheduleRepository) {
+    private final MedicationScheduleMapper scheduleMapper;
+
+    public MedicationScheduleReadService(UserService userService, MedicationScheduleRepository medicationScheduleRepository, MedicationScheduleMapper scheduleMapper) {
         this.userService = userService;
         this.medicationScheduleRepository = medicationScheduleRepository;
+        this.scheduleMapper = scheduleMapper;
     }
 
-    protected List<MedicationSchedule> findNonFinishedUserMedicationBy(Long userId) {
-        return medicationScheduleRepository.findByUser_IdAndIsFinishedFalse(userId);
+    public List<MedicationScheduleView> findNonFinishedUserMedication(UserDetails userDetails) {
+        User user = userService.getUser(userDetails.getUsername());
+        return scheduleMapper.toMedicationScheduleViewList(medicationScheduleRepository.findByUser_IdAndIsFinishedFalse(user.getId()));
     }
 
-    protected MedicationSchedule findMedicationScheduleById(Long id) {
+    public List<MedicationScheduleView> findFinishedUserMedication(UserDetails userDetails) {
+        User user = userService.getUser(userDetails.getUsername());
+        return scheduleMapper.toMedicationScheduleViewList(medicationScheduleRepository.findByUser_IdAndIsFinishedTrue(user.getId()));
+    }
+
+    public MedicationScheduleView findMedicationScheduleById(Long id) {
+        return scheduleMapper.toMedicationScheduleView(findMedicationScheduleEntityById(id));
+    }
+
+    protected MedicationSchedule findMedicationScheduleEntityById(Long id) {
         Optional<MedicationSchedule> userMedication = medicationScheduleRepository.findById(id);
 
         if (userMedication.isEmpty()) {
@@ -39,7 +54,7 @@ public class MedicationScheduleReadService {
 
     protected MedicationSchedule validateAndGetSchedule(Long scheduleId, UserDetails userDetails) throws UnauthorizedAccessException {
         User user = userService.getUser(userDetails.getUsername());
-        MedicationSchedule schedule = findMedicationScheduleById(scheduleId);
+        MedicationSchedule schedule = findMedicationScheduleEntityById(scheduleId);
 
         if (!Objects.equals(schedule.getUser().getId(), user.getId())) {
             throw new UnauthorizedAccessException("You are not allowed to alter this resource.");

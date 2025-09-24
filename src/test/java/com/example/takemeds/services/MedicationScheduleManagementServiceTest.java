@@ -62,7 +62,7 @@ public class MedicationScheduleManagementServiceTest {
         testDosage = Dosage.builder().id(1L).build();
         testMedication = Medication.builder().id(1L).defaultDosage(testDosage).build();
         testSchedule = MedicationSchedule.builder().id(1L).user(testUser).medication(testMedication).dosage(testDosage).build();
-        request = CreateMedicationScheduleRequest.builder().medicationPM(CreateMedicationDto.builder().build()).dosage(new BaseDosagePM()).build();
+        request = CreateMedicationScheduleRequest.builder().medication(CreateMedicationDto.builder().build()).dosage(new BaseDosagePM()).build();
         scheduleView = MedicationScheduleView.builder().id(1L).build();
     }
 
@@ -87,7 +87,7 @@ public class MedicationScheduleManagementServiceTest {
             // Assert
             assertThat(result).isNotNull();
             assertThat(result.getId()).isEqualTo(1L);
-            verify(medicationService).createMedicationEntity(request.getMedicationPM());
+            verify(medicationService).createMedicationEntity(request.getMedication());
             verify(dosageService).createDosageEntity(request.getDosage());
             verify(medicationScheduleRepository).save(any(MedicationSchedule.class));
         }

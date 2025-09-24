@@ -5,11 +5,10 @@ import com.example.takemeds.exceptions.InvalidRequestException;
 import com.example.takemeds.exceptions.UnauthorizedAccessException;
 import com.example.takemeds.presentationModels.dosagePMs.BaseDosagePM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.CreateMedicationScheduleRequest;
-import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleView;
-import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationScheduleWithIdsPM;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.UpdateDateDto;
 import com.example.takemeds.services.MedicationScheduleManagementService;
+import com.example.takemeds.services.MedicationScheduleReadService;
 import com.example.takemeds.services.MedicationScheduleUpdateService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,12 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/med/schedule")
@@ -31,12 +33,33 @@ public class MedicationScheduleController {
 
     private final MedicationScheduleUpdateService updateService;
 
-    public MedicationScheduleController(MedicationScheduleManagementService managementService, MedicationScheduleUpdateService updateService) {
+    private final MedicationScheduleReadService readService;
+
+    public MedicationScheduleController(MedicationScheduleManagementService managementService, MedicationScheduleUpdateService updateService, MedicationScheduleReadService readService) {
         this.managementService = managementService;
         this.updateService = updateService;
+        this.readService = readService;
     }
 
-    @PostMapping("/create/")
+    @GetMapping("/find/{scheduleId}")
+    public ResponseEntity<MedicationScheduleView> findMedicationSchedule(@PathVariable Long scheduleId) {
+        MedicationScheduleView scheduleView = readService.findMedicationScheduleById(scheduleId);
+        return new ResponseEntity<>(scheduleView, HttpStatus.OK);
+    }
+
+    @GetMapping("/find/non-finished")
+    public ResponseEntity<List<MedicationScheduleView>> findNonFinishedSchedule(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationScheduleView> scheduleViews = readService.findNonFinishedUserMedication(userDetails);
+        return new ResponseEntity<>(scheduleViews, HttpStatus.OK);
+    }
+
+    @GetMapping("/find/finished")
+    public ResponseEntity<List<MedicationScheduleView>> findFinishedSchedule(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationScheduleView> scheduleViews = readService.findFinishedUserMedication(userDetails);
+        return new ResponseEntity<>(scheduleViews, HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
     public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid CreateMedicationScheduleRequest scheduleRequestPM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException, InvalidRequestException {
         MedicationScheduleView scheduleView = managementService.createMedicationSchedule(scheduleRequestPM, userDetails);
         return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
@@ -54,7 +77,7 @@ public class MedicationScheduleController {
         return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);
     }
 
-    @PutMapping("/edit-dosage/schedule/{id}")
+    @PutMapping("/edit-dosage/schedule/{scheduleId}")
     public ResponseEntity<MedicationScheduleView> scheduleEditDosage(@PathVariable Long scheduleId, @RequestBody @Valid BaseDosagePM dosagePM, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException, InvalidFrequencyException {
         MedicationScheduleView scheduleView = updateService.editDosage(scheduleId, dosagePM, userDetails);
         return new ResponseEntity<>(scheduleView, HttpStatus.CREATED);

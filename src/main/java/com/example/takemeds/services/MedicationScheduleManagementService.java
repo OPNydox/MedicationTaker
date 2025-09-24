@@ -52,8 +52,8 @@ public class MedicationScheduleManagementService {
     private Medication getMedicationForSchedule(CreateMedicationScheduleRequest scheduleRequest) throws InvalidRequestException {
         if (scheduleRequest.getMedicationId() != null) {
             return medicationService.findMedication(scheduleRequest.getMedicationId());
-        } else if (scheduleRequest.getMedicationPM() != null) {
-            return medicationService.createMedicationEntity(scheduleRequest.getMedicationPM());
+        } else if (scheduleRequest.getMedication() != null) {
+            return medicationService.createMedicationEntity(scheduleRequest.getMedication());
         } else {
             throw new InvalidRequestException("Medication schedule must have an attached medication.");
         }

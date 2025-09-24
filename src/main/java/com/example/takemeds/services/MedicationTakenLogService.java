@@ -33,7 +33,7 @@ public class MedicationTakenLogService {
      */
     @Transactional
     public LogResponseDto createLog(CreateLogDto createLogDto) {
-        MedicationSchedule schedule = scheduleReadService.findMedicationScheduleById(createLogDto.getScheduleId());
+        MedicationSchedule schedule = scheduleReadService.findMedicationScheduleEntityById(createLogDto.getScheduleId());
 
         MedicationTakenLog newLog = new MedicationTakenLog();
         newLog.setMedicationSchedule(schedule);
