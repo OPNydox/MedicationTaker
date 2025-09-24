@@ -1,93 +1,59 @@
 package com.example.takemeds.utils.mappers;
 
-import com.example.takemeds.entities.Medication;
+
+import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.MedicationTakenLog;
-import com.example.takemeds.entities.User;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.takemeds.presentationModels.takenLogPMs.LogResponseDto;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MedTakenMapperTest {
-    private MedTakenMapper medTakenMapper;
+    private final MedTakenMapper medTakenMapper = new MedTakenMapper();
 
-    @BeforeEach
-    public void setup() {
-        medTakenMapper = new MedTakenMapper();
+    // Helper method for creating a test entity
+    private MedicationTakenLog createTestEntity() {
+        return MedicationTakenLog.builder()
+                .id(1L)
+                .medicationSchedule(MedicationSchedule.builder().id(5L).build())
+                .timeTaken(LocalDateTime.of(2025, 9, 24, 10, 30))
+                .notes("Took with breakfast.")
+                .build();
     }
 
-    @Test
-    @DisplayName("Should correctly map a MedicationTakenLog entity to a MedLogPresentationModel")
-    void entityToPM_validInput_shouldMapCorrectly() {
-        // Given
-        // We use mock objects to simulate the dependencies
-        Medication medication = Medication.builder().build();
-        medication.setName("Aspirin");
+    @Nested
+    @DisplayName("Tests for mapToDto method")
+    class MapToDtoTests {
 
-        User user = new User();
-        user.setEmail("testuser@example.com");
+        @Test
+        @DisplayName("should correctly map a MedicationTakenLog entity to a LogResponseDto")
+        void mapToDto_shouldMapCorrectly() {
+            // Arrange
+            MedicationTakenLog log = createTestEntity();
 
-        LocalDateTime timeTaken = LocalDateTime.now();
+            // Act
+            LogResponseDto dto = medTakenMapper.mapToDto(log);
 
-        MedicationTakenLog medicationTakenLog = new MedicationTakenLog();
-        medicationTakenLog.setMedication(medication);
-        medicationTakenLog.setUser(user);
-        medicationTakenLog.setTimeTaken(timeTaken);
+            // Assert
+            assertThat(dto).isNotNull();
+            assertThat(dto.getId()).isEqualTo(log.getId());
+            assertThat(dto.getScheduleId()).isEqualTo(log.getMedicationSchedule().getId());
+            assertThat(dto.getTimeTaken()).isEqualTo(log.getTimeTaken());
+            assertThat(dto.getNotes()).isEqualTo(log.getNotes());
+        }
 
-        // When
-        MedLogPresentationModel presentationModel = medTakenMapper.entityToPM(medicationTakenLog);
+        @Test
+        @DisplayName("should return null when the input entity is null")
+        void mapToDto_shouldReturnNull_forNullInput() {
+            // Act
+            LogResponseDto dto = medTakenMapper.mapToDto(null);
 
-        // Then
-        assertNotNull(presentationModel);
-        assertEquals("testuser@example.com", presentationModel.getUsername());
-        assertEquals("Aspirin", presentationModel.getMedicationName());
-        assertEquals(timeTaken, presentationModel.getTimeTaken());
-    }
-
-    @Test
-    @DisplayName("Should throw NullPointerException when MedicationTakenLog is null")
-    void entityToPM_nullInput_shouldThrowNullPointerException() {
-        // Given
-        MedicationTakenLog medicationTakenLog = null;
-
-        // When & Then
-        assertThrows(NullPointerException.class, () -> medTakenMapper.entityToPM(medicationTakenLog));
-    }
-
-    @Test
-    @DisplayName("Should throw NullPointerException when Medication in MedicationTakenLog is null")
-    void entityToPM_nullMedication_shouldThrowNullPointerException() {
-        // Given
-        User user = new User();
-        user.setEmail("testuser@example.com");
-        LocalDateTime timeTaken = LocalDateTime.now();
-
-        MedicationTakenLog medicationTakenLog = new MedicationTakenLog();
-        medicationTakenLog.setMedication(null); // Medication is null
-        medicationTakenLog.setUser(user);
-        medicationTakenLog.setTimeTaken(timeTaken);
-
-        // When & Then
-        assertThrows(NullPointerException.class, () -> medTakenMapper.entityToPM(medicationTakenLog));
-    }
-
-    @Test
-    @DisplayName("Should throw NullPointerException when User in MedicationTakenLog is null")
-    void entityToPM_nullUser_shouldThrowNullPointerException() {
-        // Given
-        Medication medication = Medication.builder().build();
-        medication.setName("Aspirin");
-        LocalDateTime timeTaken = LocalDateTime.now();
-
-        MedicationTakenLog medicationTakenLog = new MedicationTakenLog();
-        medicationTakenLog.setMedication(medication);
-        medicationTakenLog.setUser(null); // User is null
-        medicationTakenLog.setTimeTaken(timeTaken);
-
-        // When & Then
-        assertThrows(NullPointerException.class, () -> medTakenMapper.entityToPM(medicationTakenLog));
+            // Assert
+            assertThat(dto).isNull();
+        }
     }
 }
