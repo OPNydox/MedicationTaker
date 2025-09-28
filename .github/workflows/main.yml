@@ -14,6 +14,8 @@ on:
 jobs:
   build-and-release:
     name: Build and Create Release
+    permissions:
+      contents: write
     
     # This tells GitHub Actions to use a Windows virtual machine
     runs-on: windows-latest
