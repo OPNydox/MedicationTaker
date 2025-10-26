@@ -65,15 +65,4 @@ public class MedicationScheduleUpdateService {
 
         return scheduleMapper.toMedicationScheduleView(schedule);
     }
-
-    @Transactional
-    public MedicationScheduleView finishMedicationSchedule(Long scheduleId, UserDetails userDetails) throws UnauthorizedAccessException {
-        MedicationSchedule medicationSchedule = scheduleReadService.validateAndGetSchedule(scheduleId, userDetails);
-
-        medicationSchedule.setFinished(true);
-
-        return scheduleMapper.toMedicationScheduleView(medicationSchedule);
-    }
-
-
 }

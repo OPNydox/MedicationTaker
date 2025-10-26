@@ -47,18 +47,6 @@ public class MedicationScheduleController {
         return new ResponseEntity<>(scheduleView, HttpStatus.OK);
     }
 
-    @GetMapping("/find/non-finished")
-    public ResponseEntity<List<MedicationScheduleView>> findNonFinishedSchedule(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationScheduleView> scheduleViews = readService.findNonFinishedUserMedication(userDetails);
-        return new ResponseEntity<>(scheduleViews, HttpStatus.OK);
-    }
-
-    @GetMapping("/find/finished")
-    public ResponseEntity<List<MedicationScheduleView>> findFinishedSchedule(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MedicationScheduleView> scheduleViews = readService.findFinishedUserMedication(userDetails);
-        return new ResponseEntity<>(scheduleViews, HttpStatus.OK);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<MedicationScheduleView> createMedicationSchedule(@RequestBody @Valid CreateMedicationScheduleRequest scheduleRequestPM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException, InvalidRequestException {
         MedicationScheduleView scheduleView = managementService.createMedicationSchedule(scheduleRequestPM, userDetails);
@@ -86,12 +74,6 @@ public class MedicationScheduleController {
     @PutMapping("/update-dates/{id}")
     public ResponseEntity<MedicationScheduleView> updateMedicationScheduleDates(@PathVariable Long id, @RequestBody UpdateDateDto updateDto, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException {
         MedicationScheduleView updatedSchedule = updateService.updateDates(id, updateDto, userDetails);
-        return new ResponseEntity<>(updatedSchedule, HttpStatus.OK);
-    }
-
-    @PutMapping("/finish/{id}")
-    public ResponseEntity<MedicationScheduleView> finishMedicationSchedule(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) throws UnauthorizedAccessException {
-        MedicationScheduleView updatedSchedule = updateService.finishMedicationSchedule(id, userDetails);
         return new ResponseEntity<>(updatedSchedule, HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.takemeds.presentationModels;
 
+import com.example.takemeds.presentationModels.medicationSchedulesPMs.CreateMedicationScheduleRequest;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,6 @@ public class ReceiptPresentationModel {
     private Long id;
     private LocalDateTime receiptTime;
     private String description;
-    private List<MedicationSchedulePM> userMedications; // Changed to a list of presentation models
-    private boolean isFinalized;
+    private List<CreateMedicationScheduleRequest> userMedications; // Changed to a list of presentation models
+    private Long patientId;
 }

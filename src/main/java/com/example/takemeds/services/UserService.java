@@ -1,6 +1,7 @@
 package com.example.takemeds.services;
 
 import com.example.takemeds.entities.Medication;
+import com.example.takemeds.entities.Role;
 import com.example.takemeds.entities.User;
 import com.example.takemeds.presentationModels.RegistrationPresentationModel;
 import com.example.takemeds.presentationModels.RolePresentationModel;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,21 +38,16 @@ public class UserService implements UserDetailsService {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.medicationMapper = medicationMapper;
-
-        roleService.createRole("USER");
-
-        RegistrationPresentationModel baseUser = new RegistrationPresentationModel("user", "user", "123");
-
-        createUser(baseUser);
     }
 
-    public User createUser(RegistrationPresentationModel model) {
+    public User createUser(RegistrationPresentationModel model, String userRole) throws RoleNotFoundException {
         User newUser = new User();
+        Role role = roleService.findRole(userRole);
 
         newUser.setEmail(model.getEmail());
         newUser.setName(model.getName());
         newUser.setPassword(passwordEncoder.encode(model.getPassword()));
-        newUser.setRole(roleService.findRole("USER"));
+        newUser.setRole(role);
 
         repository.save(newUser);
 
@@ -65,6 +62,16 @@ public class UserService implements UserDetailsService {
         }
 
         return foundUser;
+    }
+
+    protected User getUserEntityById(Long id) {
+        Optional<User> userOptional = repository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User with id: " + id + " does not exist.");
+        }
+
+        return userOptional.get();
     }
 
     public UserPresentationModel getUser(Long id) {

@@ -82,7 +82,6 @@ public class MedicationScheduleMapper {
                 .userID(medicationSchedulePM.getUserID())
                 .medication(medicationSchedulePM.getMedication())
                 .dosage(dosagePM)
-                .isFinished(entity.isFinished())
                 .build();
     }
 

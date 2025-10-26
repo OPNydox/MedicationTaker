@@ -48,8 +48,12 @@ public class Receipt {
     private List<MedicationSchedule> medicationSchedules = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "patient_id", nullable = false)
+    private User patient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private User doctor;
 
     @Column
     boolean isFinalized;

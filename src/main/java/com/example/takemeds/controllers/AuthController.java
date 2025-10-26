@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +61,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationPresentationModel> register(@RequestBody @Valid RegistrationPresentationModel registerDetails) {
-        User newUser = userService.createUser(registerDetails);
+    public ResponseEntity<RegistrationPresentationModel> register(@RequestBody @Valid RegistrationPresentationModel registerDetails) throws RoleNotFoundException {
+        User newUser = userService.createUser(registerDetails, "PATIENT");
+        RegistrationPresentationModel result = new RegistrationPresentationModel(newUser.getName(), newUser.getEmail());
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/register/doctor")
+    public ResponseEntity<RegistrationPresentationModel> registerDoctor(@RequestBody @Valid RegistrationPresentationModel registerDetails) throws RoleNotFoundException {
+        User newUser = userService.createUser(registerDetails, "DOCTOR");
         RegistrationPresentationModel result = new RegistrationPresentationModel(newUser.getName(), newUser.getEmail());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

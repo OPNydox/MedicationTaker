@@ -2,8 +2,10 @@ package com.example.takemeds.services;
 
 import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.Receipt;
+import com.example.takemeds.entities.User;
 import com.example.takemeds.exceptions.FinalizedReceiptException;
 import com.example.takemeds.exceptions.InvalidFrequencyException;
+import com.example.takemeds.exceptions.InvalidRequestException;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.CreateMedicationScheduleRequest;
 import com.example.takemeds.presentationModels.medicationSchedulesPMs.MedicationSchedulePM;
@@ -11,9 +13,11 @@ import com.example.takemeds.repositories.ReceiptRepository;
 import com.example.takemeds.utils.mappers.ReceiptMapper;
 import com.example.takemeds.utils.mappers.MedicationScheduleMapper;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,13 +28,16 @@ public class ReceiptService {
 
     private final ReceiptMapper receiptMapper;
 
+    private final UserService userService;
+
     private final MedicationScheduleManagementService scheduleManagementService;
 
     private final MedicationScheduleMapper medicationScheduleMapper;
 
-    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, MedicationScheduleManagementService scheduleManagementService, MedicationScheduleMapper medicationScheduleMapper) {
+    public ReceiptService(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper, UserService userService, MedicationScheduleManagementService scheduleManagementService, MedicationScheduleMapper medicationScheduleMapper) {
         this.receiptRepository = receiptRepository;
         this.receiptMapper = receiptMapper;
+        this.userService = userService;
         this.scheduleManagementService = scheduleManagementService;
         this.medicationScheduleMapper = medicationScheduleMapper;
     }
@@ -42,12 +49,18 @@ public class ReceiptService {
      * @return The created Receipt entity.
      */
     @Transactional
-    public ReceiptPresentationModel createReceipt(ReceiptPresentationModel presentationModel) throws InvalidFrequencyException {
+    public ReceiptPresentationModel createReceipt(ReceiptPresentationModel presentationModel, UserDetails userDetails) throws InvalidFrequencyException, InvalidRequestException {
         Receipt receipt = receiptMapper.toEntity(presentationModel);
 
-        if (presentationModel.isFinalized()) {
-            finalizeReceipt(receipt);
-        }
+        User doctor = userService.getUser(userDetails.getUsername());
+        User patient = userService.getUserEntityById(presentationModel.getPatientId());
+
+        receipt.setDoctor(doctor);
+        receipt.setPatient(patient);
+
+        List<MedicationSchedule> schedules = scheduleManagementService.createScheduleEntitiesFromRequests(presentationModel.getUserMedications(), patient);
+
+        schedules.forEach(schedule -> schedule.setReceipt(receipt));
 
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
@@ -96,24 +109,16 @@ public class ReceiptService {
         return receiptMapper.toPresentationModel(receiptRepository.save(receipt));
     }
 
-    /**
-     * Finalizes a receipt, preventing further modifications to its user medications.
-     *
-     * @param receiptId The ID of the receipt to finalize.
-     * @return The finalized Receipt entity.
-     * @throws IllegalArgumentException If the receipt with the given ID is not found.
-     */
-    @Transactional
-    public Receipt finalizeReceipt(Long receiptId) {
-        Receipt receipt = findReceiptEntity(receiptId);
-        finalizeReceipt(receipt);
+    private List<MedicationSchedule> prepareSchedules(Receipt receipt) {
+        List<MedicationSchedule> schedules = new ArrayList<>();
 
-        return receipt;
-    }
+        for (MedicationSchedule medicationSchedule : receipt.getMedicationSchedules()) {
+            medicationSchedule.setUser(receipt.getPatient());
+            medicationSchedule.setReceipt(receipt);
+            schedules.add(medicationSchedule);
+        }
 
-    public Receipt finalizeReceipt(Receipt receipt) {
-        // finilize receipt
-        return null;
+        return schedules;
     }
 
     /**

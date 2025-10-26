@@ -1,5 +1,6 @@
 package com.example.takemeds.presentationModels;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,8 +15,9 @@ public class RegistrationPresentationModel {
     @Pattern(regexp = "^[A-Za-z ]{2,50}$", message = "Name must be 3–50 alphabetic characters")
     private String name;
 
-    @NotBlank(message = "Email is requred")
+    @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Password is required")

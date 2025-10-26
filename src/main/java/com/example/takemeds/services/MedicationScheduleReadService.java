@@ -28,16 +28,6 @@ public class MedicationScheduleReadService {
         this.scheduleMapper = scheduleMapper;
     }
 
-    public List<MedicationScheduleView> findNonFinishedUserMedication(UserDetails userDetails) {
-        User user = userService.getUser(userDetails.getUsername());
-        return scheduleMapper.toMedicationScheduleViewList(medicationScheduleRepository.findByUser_IdAndIsFinishedFalse(user.getId()));
-    }
-
-    public List<MedicationScheduleView> findFinishedUserMedication(UserDetails userDetails) {
-        User user = userService.getUser(userDetails.getUsername());
-        return scheduleMapper.toMedicationScheduleViewList(medicationScheduleRepository.findByUser_IdAndIsFinishedTrue(user.getId()));
-    }
-
     public MedicationScheduleView findMedicationScheduleById(Long id) {
         return scheduleMapper.toMedicationScheduleView(findMedicationScheduleEntityById(id));
     }
@@ -64,9 +54,6 @@ public class MedicationScheduleReadService {
             throw new UnauthorizedAccessException("Cannot edit a medication schedule that has been recorded by a receipt.");
         }
 
-        if (schedule.isFinished()) {
-            throw new UnauthorizedAccessException("Finished schedule cannot be altered.");
-        }
 
         return schedule;
     }

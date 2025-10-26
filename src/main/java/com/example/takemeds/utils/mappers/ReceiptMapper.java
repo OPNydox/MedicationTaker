@@ -1,5 +1,6 @@
 package com.example.takemeds.utils.mappers;
 
+import com.example.takemeds.entities.MedicationSchedule;
 import com.example.takemeds.entities.Receipt;
 import com.example.takemeds.presentationModels.ReceiptPresentationModel;
 import lombok.SneakyThrows;
@@ -11,17 +12,17 @@ import java.util.stream.Collectors;
 @Component
 public class ReceiptMapper {
 
+    private MedicationScheduleMapper scheduleMapper;
+
     public ReceiptPresentationModel toPresentationModel(Receipt receipt) {
         if (receipt == null) {
             return null;
         }
 
-
         return ReceiptPresentationModel.builder()
                 .id(receipt.getId())
                 .receiptTime(receipt.getReceiptTime())
                 .description(receipt.getDescription())
-                .isFinalized(receipt.isFinalized())
                 .build();
     }
 
@@ -40,8 +41,7 @@ public class ReceiptMapper {
         }
 
         return Receipt.builder().id(receiptPM.getId())
-                                .description(receiptPM.getDescription())
-                                .isFinalized(receiptPM.isFinalized()).build();
+                                .description(receiptPM.getDescription()).build();
     }
 
     @SneakyThrows

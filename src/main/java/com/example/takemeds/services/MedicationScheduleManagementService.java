@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class MedicationScheduleManagementService {
     private final MedicationScheduleRepository medicationScheduleRepository;
@@ -41,12 +44,25 @@ public class MedicationScheduleManagementService {
     @Transactional
     public MedicationScheduleView createMedicationSchedule(CreateMedicationScheduleRequest createSchedulePM, UserDetails userDetails) throws InvalidFrequencyException, InvalidRequestException {
         User user = userService.getUser(userDetails.getUsername());
-        Medication medication = getMedicationForSchedule(createSchedulePM);
-        Dosage dosage = getDosageForSchedule(createSchedulePM, medication);
 
-        MedicationSchedule result = createEntity(medication, dosage, user, createSchedulePM);
+        MedicationSchedule result = medicationScheduleRepository.save(createScheduleEntity(createSchedulePM, user));
 
         return medicationScheduleMapper.toMedicationScheduleView(result);
+    }
+
+    @Transactional
+    public List<MedicationSchedule> createScheduleEntitiesFromRequests(List<CreateMedicationScheduleRequest> scheduleRequests, User patient) throws InvalidRequestException, InvalidFrequencyException {
+        if (scheduleRequests == null || scheduleRequests.isEmpty() || patient == null) {
+            return new ArrayList<>();
+        }
+
+        List<MedicationSchedule> createSchedule = new ArrayList<>();
+
+        for (CreateMedicationScheduleRequest request : scheduleRequests) {
+            createSchedule.add(createScheduleEntity(request, patient));
+        }
+
+        return createSchedule;
     }
 
     private Medication getMedicationForSchedule(CreateMedicationScheduleRequest scheduleRequest) throws InvalidRequestException {
@@ -69,19 +85,18 @@ public class MedicationScheduleManagementService {
         }
     }
 
-    private MedicationSchedule createEntity(Medication medication, Dosage dosage, User user, CreateMedicationScheduleRequest schedulePM) {
-        MedicationSchedule medicationSchedule = MedicationSchedule.builder().build();
+    private MedicationSchedule createScheduleEntity(CreateMedicationScheduleRequest schedulePM, User user) throws InvalidRequestException, InvalidFrequencyException {
+        Medication medication = getMedicationForSchedule(schedulePM);
+        Dosage dosage = getDosageForSchedule(schedulePM, medication);
 
-        medicationSchedule.setMedication(medication);
-        medicationSchedule.setDosage(dosage);
-        medicationSchedule.setUser(user);
-        medicationSchedule.setEndDate(schedulePM.getEndDate());
-        medicationSchedule.setStartDate(schedulePM.getStartDate());
-        medicationSchedule.setFinished(false);
-
-        return medicationScheduleRepository.save(medicationSchedule);
+        return MedicationSchedule.builder()
+                .medication(medication)
+                .dosage(dosage)
+                .user(user)
+                .startDate(schedulePM.getStartDate())
+                .endDate(schedulePM.getEndDate())
+                .build();
     }
-
 
     @Transactional
     public void deleteMedicationSchedule(Long scheduleId, UserDetails userDetails) throws UnauthorizedAccessException {

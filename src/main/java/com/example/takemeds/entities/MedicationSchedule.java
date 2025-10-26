@@ -48,6 +48,4 @@ public class MedicationSchedule {
     private LocalDate startDate;
 
     private LocalDate endDate;
-
-    private boolean isFinished;
 }

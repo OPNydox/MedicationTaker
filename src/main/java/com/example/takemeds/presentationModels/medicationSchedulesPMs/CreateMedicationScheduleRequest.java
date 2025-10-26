@@ -15,16 +15,14 @@ import java.time.LocalDate;
 public class CreateMedicationScheduleRequest {
     private Long medicationId;
 
+    @NotNull(message = "Medication is required.")
     private CreateMedicationDto medication;
 
     private BaseDosagePM dosage;
 
-    @NotNull(message = "Start date is required.")
     private LocalDate startDate;
 
-    @NotNull(message = "End date is required.")
     private LocalDate endDate;
 
-    @NotNull(message = "User ID is required.")
     private Long userId;
 }

@@ -48,10 +48,6 @@ public class MedicationTakenLogService {
             throw new UnauthorizedAccessException("You have not been assigned this medication");
         }
 
-        if (schedule.isFinished()) {
-            throw new InvalidRequestException("Medication regiment is already complete, please don't take any more");
-        }
-
         MedicationTakenLog newLog = MedicationTakenLog.builder().build();
         newLog.setMedicationSchedule(schedule);
         newLog.setTimeTaken(createLogDto.getTimeTaken() != null ? createLogDto.getTimeTaken() : LocalDateTime.now());
