@@ -1,0 +1,935 @@
+{
+	"info": {
+		"_postman_id": "8fd526ba-0cbb-4e68-9f5b-b45ba6548a61",
+		"name": "MedicationApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7724436"
+	},
+	"item": [
+		{
+			"name": "Login Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Check if the response contains a token field (or whatever your token field is called)\r",
+							"if (responseData.token) {\r",
+							"    // Set the value of the 'api_token' environment variable\r",
+							"    pm.environment.set(\"api_token\", responseData.token);\r",
+							"    console.log(\"Successfully updated the api_token environment variable!\");\r",
+							"} else {\r",
+							"    console.error(\"Login failed or no token was found in the response.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer  eyJhbGciOiJFUzI1NiJ9.eyJhdXRoIjpbeyJyb2xlIjoiY29tLmV4YW1wbGUudGFrZW1lZHMuZW50aXRpZXMuUm9sZUAxMDkxNGU0YiIsImF1dGhvcml0eSI6ImNvbS5leGFtcGxlLnRha2VtZWRzLmVudGl0aWVzLlJvbGVAMTA5MTRlNGIifV0sInN1YiI6InVzZXIiLCJpYXQiOjE3NDY2NTQ4MDEsImV4cCI6MTc0NjY1ODQwMX0.Ro5n1yEq8aAbfgMjO--yb62Y7i_BP3hx2kh0sJTfa4AkmcGT9pGzmuqu5iWuUwz0urkdwkLiGR9fL42loZLCmg",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"user\",\r\n  \"password\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "user",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Medication",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"lutenica\",\r\n    \"description\": \"luta\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/medication/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"medication",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Medication with Dosage",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"nacepin\",\r\n    \"description\": \"ikea\",\r\n    \"defaultDosagePM\": {\r\n        \"frequency\": \"DAILY\",\r\n        \"timesPerDay\": 3,\r\n        \"timesToTake\": [\r\n            \"10:30:00\",\r\n            \"13:30:00\",\r\n            \"23:30:00\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/medication/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"medication",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit medication",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"lutenica 2.0\",\r\n    \"description\": \"Mnogo luta\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/medication/edit/my/medication/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"medication",
+						"edit",
+						"my",
+						"medication",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete medication",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/medication/delete/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"medication",
+						"delete",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show assigned medications",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"lutenica\",\r\n    \"description\": \"luta\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/show/my/medication",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"show",
+						"my",
+						"medication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Dosage with medication",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer  eyJhbGciOiJFUzI1NiJ9.eyJhdXRoIjpbeyJyb2xlIjoiY29tLmV4YW1wbGUudGFrZW1lZHMuZW50aXRpZXMuUm9sZUAxZTY0ZGNlOCIsImF1dGhvcml0eSI6ImNvbS5leGFtcGxlLnRha2VtZWRzLmVudGl0aWVzLlJvbGVAMWU2NGRjZTgifV0sInN1YiI6InVzZXIiLCJpYXQiOjE3NDgyODQyNTEsImV4cCI6MTc0ODI4Nzg1MX0.glWEMMuEsL9-kK9PZqLcEHjhTinlWRxanrWBkkRxGsylOPdGk7RekvpE5A10kZzcgT8FUeQoYiEy7oDayjrdJA",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"lutenica\",\r\n    \"description\": \"luta\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/medication/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"medication",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule find schedule",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/find/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"find",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule Find finished",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/find/non-finished",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"find",
+						"non-finished"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule Find non-finished",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/find/finished",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"find",
+						"finished"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule Create  with medication id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"endDate\": \"2025-12-31\",\r\n  \"startDate\": \"2025-11-01\",\r\n  \"dosage\": {\r\n    \"frequency\": \"DAILY\",\r\n    \"timesPerDay\": 2,\r\n    \"timesToTake\": [\r\n      \"09:00\",\r\n      \"21:00\"\r\n    ]\r\n  },\r\n  \"medicationId\": 1,\r\n  \"userId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule Create  with medication",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"endDate\": \"2025-12-31\",\r\n  \"startDate\": \"2025-11-01\",\r\n  \"userId\": 1,\r\n  \"dosage\": {\r\n    \"frequency\": \"DAILY\",\r\n    \"timesPerDay\": 2,\r\n    \"timesToTake\": [\r\n      \"09:00\",\r\n      \"21:00\"\r\n    ]\r\n  },\r\n  \"medication\": {\r\n    \"id\": 1,\r\n    \"name\": \"Aspirin\",\r\n    \"description\": \"Used as a pain reliever.\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/delete/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"delete",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule swap medication",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"endDate\": \"2025-12-31\",\r\n  \"startDate\": \"2025-11-01\",\r\n  \"userID\": 123,\r\n  \"dosage\": {\r\n    \"frequency\": \"DAILY\",\r\n    \"timesPerDay\": 2,\r\n    \"timesToTake\": [\r\n      \"09:00\",\r\n      \"21:00\"\r\n    ]\r\n  },\r\n  \"medication\": {\r\n    \"id\": 1,\r\n    \"name\": \"Aspirin\",\r\n    \"description\": \"Used as a pain reliever.\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/swap-medication/schedule/2/medication/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"swap-medication",
+						"schedule",
+						"2",
+						"medication",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule edit Dosage",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"frequency\": \"DAILY\",\r\n  \"timesPerDay\": 4,\r\n  \"timesToTake\": [\r\n    \"09:00\",\r\n    \"17:00\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/edit-dosage/schedule/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"edit-dosage",
+						"schedule",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule edit dates",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"startDate\": \"2025-10-25\",\r\n  \"endDate\": \"2025-11-25\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/update-dates/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"update-dates",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Medication schedule edit dates Copy",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"frequency\": \"DAILY\",\r\n  \"timesPerDay\": 4,\r\n  \"timesToTake\": [\r\n    \"09:00\",\r\n    \"17:00\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/schedule/finish/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"schedule",
+						"finish",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"scheduleId\": 1,\r\n  \"timeTaken\": \"2025-09-24T10:45:00\",\r\n  \"notes\": \"Took medication with breakfast.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log find",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log find by schedule",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/schedule/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"schedule",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log create Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"scheduleId\": 1,\r\n  \"timeTaken\": \"2025-09-24T10:45:00\",\r\n  \"notes\": \"Took medication with breakfast.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Taken Log create Copy 2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_token}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"scheduleId\": 1,\r\n  \"timeTaken\": \"2025-09-24T10:45:00\",\r\n  \"notes\": \"Took medication with breakfast.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/med/user/logs/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"med",
+						"user",
+						"logs",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
