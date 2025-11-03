@@ -36,7 +36,24 @@ services:
       postgres:
         condition: service_healthy # Waits for the postgres healthcheck to pass
 
+    # **NEW** Service 3: pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: my-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80" # Access pgAdmin on http://localhost:5050
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 # Defines a "volume" to store your database data
 volumes:
   postgres-data:
     driver: local # This ensures your DB data persists even if you stop/remove the container
+  pgadmin-data: # <-- ADD THIS LINE
+    driver: local
