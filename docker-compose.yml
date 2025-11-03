@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Service 1: The PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine # Use a specific, lightweight Postgres image
+    container_name: my-postgres-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432" # Maps your computer's port 5432 to the container's port
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d MedicineApp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service 2: Your Spring Boot API
+  api:
+    build: .  # This tells Compose to build the image from the Dockerfile in this directory
+    container_name: my-spring-boot-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Tell Spring Boot where to find the database
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      # This tells Spring to wait for the database connection on startup
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create # Good for dev/QA, creates/updates tables
+    depends_on:
+      postgres:
+        condition: service_healthy # Waits for the postgres healthcheck to pass
+
+# Defines a "volume" to store your database data
+volumes:
+  postgres-data:
+    driver: local # This ensures your DB data persists even if you stop/remove the container
