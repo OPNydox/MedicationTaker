@@ -11,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/med/medication")
@@ -31,6 +34,12 @@ public class MedicationController {
     public ResponseEntity<MedicationView> createMedication(@RequestBody @Valid CreateMedicationDto medicationPM, @AuthenticationPrincipal UserDetails userDetails) throws InvalidFrequencyException {
         MedicationView createdMedication = medicationService.createMedication(medicationPM, userDetails);
         return new ResponseEntity<>(createdMedication, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/my-medications")
+    public ResponseEntity<List<MedicationView>> showMyMedications(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MedicationView> myMedications = medicationService.getMyMedications(userDetails);
+        return new ResponseEntity<>(myMedications, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")

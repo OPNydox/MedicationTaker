@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -121,5 +122,12 @@ public class MedicationService {
         medication.setDefaultDosage(createdDosage);
 
         return medicationMapper.mapEntityToPM(medication);
+    }
+
+    public List<MedicationView> getMyMedications(UserDetails userDetails) {
+        User user = userService.getUser(userDetails.getUsername());
+        List<Medication> medicationEntities = user.getMedications();
+
+        return medicationMapper.mapMedicationsToPM(medicationEntities);
     }
 }
